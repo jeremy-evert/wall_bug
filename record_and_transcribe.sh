@@ -20,7 +20,7 @@ echo
 
 ffmpeg -i "$FILE" -ar 16000 -ac 1 temp.wav -y >/dev/null 2>&1
 
-./whisper.cpp/main \
+./whisper.cpp/build/bin/whisper-cli \
   -m whisper.cpp/models/ggml-base.en.bin \
   -f temp.wav \
   -otxt
