@@ -1,2 +1,15 @@
 # wall_bug
-Clone it, run one setup script, and you can record → transcribe → get text with almost zero thinking.
+
+Simple Linux audio transcription tool.
+
+Record from microphone and transcribe locally using Whisper.
+
+No cloud services required.
+
+## Setup
+
+```bash
+git clone https://github.com/YOURNAME/wall_bug
+cd wall_bug
+chmod +x *.sh
+./setup.sh
