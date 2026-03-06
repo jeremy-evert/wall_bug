@@ -292,7 +292,7 @@
     "outputs": [
       "src/wallbug/config/__init__.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-024",
@@ -404,7 +404,7 @@
     "outputs": [
       "src/wallbug/commands/__init__.py"
     ],
-    "status": "todo"
+    "status": "failed"
   },
   {
     "id": "WALLBUG-032",
@@ -430,7 +430,7 @@
     "outputs": [
       "src/wallbug/commands/daemon.py"
     ],
-    "status": "todo"
+    "status": "failed"
   },
   {
     "id": "WALLBUG-034",
@@ -456,7 +456,7 @@
     "outputs": [
       "src/wallbug/commands/transcribe.py"
     ],
-    "status": "todo"
+    "status": "failed"
   },
   {
     "id": "WALLBUG-036",
@@ -482,7 +482,7 @@
     "outputs": [
       "src/wallbug/commands/summarize_day.py"
     ],
-    "status": "todo"
+    "status": "failed"
   },
   {
     "id": "WALLBUG-038",
@@ -508,7 +508,7 @@
     "outputs": [
       "src/wallbug/recorder.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-040",
@@ -796,7 +796,7 @@
     "outputs": [
       "src/wallbug/transcriber.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-061",
@@ -851,7 +851,7 @@
     "outputs": [
       "src/wallbug/archive.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-065",
@@ -1145,7 +1145,7 @@
     "outputs": [
       "src/wallbug/summarizer.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-086",
@@ -1317,7 +1317,7 @@
     "outputs": [
       "config.yaml"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-099",
@@ -1384,7 +1384,7 @@
     "outputs": [
       "src/wallbug/vad.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-104",
@@ -1443,7 +1443,7 @@
     "outputs": [
       "src/wallbug/archive.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-108",
@@ -1479,7 +1479,7 @@
     "outputs": [
       "systemd/wallbug.service"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-111",
@@ -1491,7 +1491,7 @@
     "outputs": [
       "docs/usage.md"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-112",
@@ -1515,7 +1515,7 @@
     "outputs": [
       "setup.sh"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-114",
@@ -1527,7 +1527,7 @@
     "outputs": [
       "setup.sh"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-115",
@@ -1555,7 +1555,7 @@
     "outputs": [
       "systemd/wallbug.service"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-117",
@@ -1595,7 +1595,7 @@
     "outputs": [
       "requirements.txt"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-120",
@@ -1675,7 +1675,7 @@
     "outputs": [
       "/etc/systemd/system/myapp.service"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-126",
@@ -1800,7 +1800,7 @@
     "outputs": [
       "src/wallbug/config.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-135",

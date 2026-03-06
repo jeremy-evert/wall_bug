@@ -4,6 +4,7 @@ import json
 import subprocess
 import tempfile
 import re
+import threading
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -13,6 +14,8 @@ MAX_WORKERS = 4
 MAX_RETRIES = 5
 
 build_memory = []
+memory_lock = threading.Lock()
+task_file_lock = threading.Lock()
 
 
 # --------------------------------------------------------
@@ -96,8 +99,9 @@ def load_tasks():
 
 def save_tasks(tasks):
 
-    with open(TASK_FILE, "w") as f:
-        json.dump(tasks, f, indent=2)
+    with task_file_lock:
+        with open(TASK_FILE, "w") as f:
+            json.dump(tasks, f, indent=2)
 
 
 # --------------------------------------------------------
@@ -140,21 +144,67 @@ def task_is_up_to_date(task):
         if not Path(f).exists():
             return False
 
-    if not inputs:
-        return True
+    existing_inputs = [
+        Path(f) for f in inputs if Path(f).exists()
+    ]
 
-    newest_input = max(
-        Path(f).stat().st_mtime
-        for f in inputs
-        if Path(f).exists()
-    )
+    if not existing_inputs:
+        return False
 
-    oldest_output = min(
-        Path(f).stat().st_mtime
-        for f in outputs
-    )
+    newest_input = max(p.stat().st_mtime for p in existing_inputs)
+    oldest_output = min(Path(f).stat().st_mtime for f in outputs)
 
     return oldest_output >= newest_input
+
+
+# --------------------------------------------------------
+# dependency graph
+# --------------------------------------------------------
+
+def build_dependency_graph(tasks):
+
+    output_map = {}
+    deps = {}
+
+    for t in tasks:
+        tid = t["id"]
+        deps[tid] = set()
+
+        for out in t.get("outputs", []):
+            output_map[out] = tid
+
+    for t in tasks:
+
+        tid = t["id"]
+
+        for inp in t.get("inputs", []):
+
+            producer = output_map.get(inp)
+
+            if producer and producer != tid:
+                deps[tid].add(producer)
+
+    return deps
+
+
+def get_ready_tasks(tasks, deps):
+
+    ready = []
+
+    for t in tasks:
+
+        if t["status"] != "todo":
+            continue
+
+        tid = t["id"]
+
+        if all(
+            next(x for x in tasks if x["id"] == d)["status"] == "done"
+            for d in deps.get(tid, [])
+        ):
+            ready.append(t)
+
+    return ready
 
 
 # --------------------------------------------------------
@@ -262,6 +312,7 @@ CURRENT FILE CONTENT
 RULES
 -----
 Modify ONLY the allowed files.
+Never include markdown code fences.
 
 OUTPUT FORMAT
 -------------
@@ -323,8 +374,11 @@ def write_safe(path, content):
                 check=True
             )
 
-        Path(path).write_text(content + "\n")
+        target = Path(path)
 
+        target.parent.mkdir(parents=True, exist_ok=True)
+
+        target.write_text(content + "\n")
 
 # --------------------------------------------------------
 # apply changes
@@ -401,10 +455,14 @@ def execute_task(task):
 
             git_commit(task["id"])
 
-            build_memory.append(f"{task['id']} : {task['description']}")
+            with memory_lock:
 
-            if len(build_memory) > 10:
-                build_memory.pop(0)
+                build_memory.append(
+                    f"{task['id']} : {task['description']}"
+                )
+
+                if len(build_memory) > 10:
+                    build_memory.pop(0)
 
             print("✅ Task complete\n")
 
@@ -428,7 +486,7 @@ def execute_task(task):
 
 
 # --------------------------------------------------------
-# orchestrator
+# orchestrator (Forge scheduler)
 # --------------------------------------------------------
 
 def main():
@@ -441,45 +499,36 @@ def main():
 
     tasks = load_tasks()
 
-    runnable = []
+    deps = build_dependency_graph(tasks)
 
-    for t in tasks:
+    while True:
 
-        if t["status"] != "todo":
-            continue
+        ready = get_ready_tasks(tasks, deps)
 
-        if task_is_up_to_date(t):
+        if not ready:
+            break
 
-            print(f"⏩ Skipping {t['id']} (up-to-date)")
+        ready = filter_duplicate_tasks(ready)
 
-            t["status"] = "done"
-            save_tasks(tasks)
+        print(f"{len(ready)} tasks ready\n")
 
-            continue
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
 
-        runnable.append(t)
+            futures = {pool.submit(execute_task, t): t for t in ready}
 
-    runnable = filter_duplicate_tasks(runnable)
+            for future in as_completed(futures):
 
-    print(f"{len(runnable)} tasks ready\n")
+                task = futures[future]
 
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
+                try:
+                    success = future.result()
+                except Exception as e:
+                    print("Worker crashed:", e)
+                    success = False
 
-        futures = {pool.submit(execute_task, t): t for t in runnable}
+                task["status"] = "done" if success else "failed"
 
-        for future in as_completed(futures):
-
-            task = futures[future]
-
-            try:
-                success = future.result()
-            except Exception as e:
-                print("Worker crashed:", e)
-                success = False
-
-            task["status"] = "done" if success else "failed"
-
-            save_tasks(tasks)
+                save_tasks(tasks)
 
     print("\nRun complete\n")
 

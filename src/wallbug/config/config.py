@@ -65,6 +65,16 @@ def _caster_for_default(value: Any) -> Any:
     return str
 
 
+def _candidate_env_suffixes(path: str) -> list[str]:
+    if "." not in path:
+        return [path.upper()]
+    section, key = path.split(".", 1)
+    return [
+        f"{section}_{key}".upper(),
+        f"{section}__{key}".upper(),
+    ]
+
+
 @dataclass
 class PathsConfig:
     base_dir: Path = field(default_factory=lambda: Path.home() / ".wallbug")
@@ -186,7 +196,7 @@ class ToolsConfig:
 
 
 @dataclass
-class Config:
+class Configuration:
     paths: PathsConfig = field(default_factory=PathsConfig)
     recorder: RecorderConfig = field(default_factory=RecorderConfig)
     transcription: TranscriptionConfig = field(default_factory=TranscriptionConfig)
@@ -196,7 +206,7 @@ class Config:
     debug: bool = False
 
     @classmethod
-    def from_dict(cls, data: Mapping[str, Any], base: Optional["Config"] = None) -> "Config":
+    def from_dict(cls, data: Mapping[str, Any], base: Optional["Configuration"] = None) -> "Configuration":
         base = base or cls()
         return cls(
             paths=PathsConfig.from_dict(data.get("paths", {}), base.paths),
@@ -211,7 +221,7 @@ class Config:
         )
 
     @classmethod
-    def from_file(cls, path: str | Path, base: Optional["Config"] = None) -> "Config":
+    def from_file(cls, path: str | Path, base: Optional["Configuration"] = None) -> "Configuration":
         file_path = Path(path).expanduser()
         if not file_path.exists():
             return base or cls()
@@ -221,7 +231,7 @@ class Config:
             return base or cls()
         return cls.from_dict(loaded, base=base)
 
-    def with_env_overrides(self) -> "Config":
+    def with_env_overrides(self) -> "Configuration":
         data: dict[str, Any] = {
             "debug": self.debug,
             "paths": {
@@ -264,6 +274,7 @@ class Config:
             },
         }
 
+        # Legacy names and shorthand aliases.
         env_aliases: dict[str, str] = {
             "DEBUG": "debug",
             "BASE_DIR": "paths.base_dir",
@@ -299,51 +310,38 @@ class Config:
             "WHISPER_CPP_PATH": "tools.whisper_cpp_path",
         }
 
-        top_sections = {"paths", "recorder", "transcription", "llm", "logging", "tools"}
         casters = {path: _caster_for_default(value) for path, value in _iter_leaf_paths(data)}
 
-        for env_name, raw_value in os.environ.items():
-            if not env_name.startswith(ENV_PREFIX):
-                continue
-
-            suffix = env_name[len(ENV_PREFIX) :]
-            path = env_aliases.get(suffix)
-
-            if path is None and "_" in suffix:
-                section, remainder = suffix.split("_", 1)
-                section = section.lower()
-                if section in top_sections:
-                    candidate = f"{section}.{remainder.lower()}"
-                    if candidate in casters:
-                        path = candidate
-
-            if path is None and "__" in suffix:
-                candidate = suffix.lower().replace("__", ".")
-                if candidate in casters:
-                    path = candidate
-
-            if path is None:
-                continue
-
+        def apply_env_override(suffix: str, path: str) -> None:
+            raw_value = os.getenv(f"{ENV_PREFIX}{suffix}")
+            if raw_value is None:
+                return
             caster = casters.get(path)
             if caster is None:
-                continue
-
+                return
             try:
                 coerced = caster(raw_value)
             except (TypeError, ValueError):
-                continue
-
+                return
             _set_nested_value(data, path, coerced)
 
-        return Config.from_dict(data)
+        # Canonical names for every known leaf path.
+        for path in sorted(casters):
+            for suffix in _candidate_env_suffixes(path):
+                apply_env_override(suffix, path)
+
+        # Legacy aliases applied last so they retain backward-compatible precedence.
+        for suffix, path in env_aliases.items():
+            apply_env_override(suffix, path)
+
+        return Configuration.from_dict(data)
 
 
-Configuration = Config
+Config = Configuration
 
 
-def load_config(config_path: Optional[str | Path] = None) -> Config:
-    config = Config()
+def load_config(config_path: Optional[str | Path] = None) -> Configuration:
+    config = Configuration()
     if config_path is not None:
-        config = Config.from_file(config_path, base=config)
+        config = Configuration.from_file(config_path, base=config)
     return config.with_env_overrides()
