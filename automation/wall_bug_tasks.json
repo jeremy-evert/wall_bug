@@ -124,7 +124,7 @@
     "outputs": [
       "pyproject.toml"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-011",
@@ -196,7 +196,7 @@
     "outputs": [
       "src/wallbug/config.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-017",
@@ -593,7 +593,7 @@
     "outputs": [
       "src/wallbug/config.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-046",
@@ -953,7 +953,7 @@
     "outputs": [
       "src/wallbug/metadata.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-072",
@@ -1503,7 +1503,7 @@
     "outputs": [
       "setup.sh"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-113",
