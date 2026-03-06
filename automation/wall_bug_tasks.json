@@ -1305,7 +1305,7 @@
     "outputs": [
       "src/wallbug/search_engine.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-098",
