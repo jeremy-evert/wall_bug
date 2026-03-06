@@ -1618,7 +1618,8 @@
     "inputs": [],
     "outputs": [
       "systemd/wallbug.service"
-    ]
+    ],
+    "status": "done"
   },
   {
     "id": "WALLBUG-122",
