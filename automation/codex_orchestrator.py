@@ -1,15 +1,19 @@
+#!/usr/bin/env python3
+
 import json
 import subprocess
+import tempfile
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-TASK_FILE = "automation/codex_tasks.json"
+TASK_FILE = "automation/wall_bug_tasks.json"
 
-MAX_TASKS_PER_RUN = 4
+MAX_WORKERS = 4
 MAX_RETRIES = 5
 
 
 # --------------------------------------------------------
-# enforce filesystem contract
+# filesystem contract
 # --------------------------------------------------------
 
 def enforce_contract():
@@ -25,7 +29,12 @@ def enforce_contract():
 
 def load_tasks():
     with open(TASK_FILE) as f:
-        return json.load(f)
+        tasks = json.load(f)
+
+    for t in tasks:
+        t.setdefault("status", "todo")
+
+    return tasks
 
 
 def save_tasks(tasks):
@@ -34,23 +43,17 @@ def save_tasks(tasks):
 
 
 def get_pending(tasks):
-    pending = [t for t in tasks if t.get("status", "todo") == "todo"]
-    return pending[:MAX_TASKS_PER_RUN]
+    return [t for t in tasks if t["status"] == "todo"]
 
 
 # --------------------------------------------------------
-# filesystem guard
+# filesystem helpers
 # --------------------------------------------------------
 
 def ensure_task_filesystem(task):
     for f in task.get("files", []):
-        path = Path(f)
-        path.parent.mkdir(parents=True, exist_ok=True)
+        Path(f).parent.mkdir(parents=True, exist_ok=True)
 
-
-# --------------------------------------------------------
-# verify expected files exist
-# --------------------------------------------------------
 
 def verify_task_files(task):
 
@@ -62,7 +65,7 @@ def verify_task_files(task):
 
     if missing:
         raise RuntimeError(
-            "Task expected files missing:\n" + "\n".join(missing)
+            "Expected files missing:\n" + "\n".join(missing)
         )
 
 
@@ -117,100 +120,54 @@ def build_prompt(task, previous_error=None, last_diff=None):
     retry_section = ""
     if previous_error:
         retry_section = f"""
-
 PREVIOUS FAILURE
 ----------------
 {previous_error}
-
-Fix the issue that caused this failure.
+Fix the issue above.
 """
 
     diff_section = ""
     if last_diff:
         diff_section = f"""
-
 LAST CHANGES MADE
 -----------------
 {last_diff}
 """
 
     return f"""
-You are a senior Python engineer working on a CLI tool.
+You are a senior Python engineer.
 
 PROJECT
 -------
-BRAT (Brainstorming Revision Assistance Tool)
+Wall_Bug
 
-PROJECT TYPE
-------------
-Python CLI application.
+A CLI tool that captures spoken ideas and converts them into
+structured notes.
 
-STRICT ARCHITECTURE RULES
--------------------------
-This project MUST NOT include:
-
-- web frontends
-- backend servers
-- databases
-- REST APIs
-- authentication systems
-
-The project uses simple Python modules.
-
-ALLOWED PROJECT AREAS
----------------------
-
-src/brat/
-scripts/
-tests/
-docs/
-
-CURRENT TASK
-------------
-
+TASK
+----
 {task['description']}
 
 FILES YOU MAY MODIFY
 --------------------
-
 {files}
 
 RULES
 -----
-
-1. Modify ONLY the files listed above.
-2. If a file does not exist, create it.
-3. Write clean Python code.
-4. Prefer small focused functions.
-5. Add docstrings when appropriate.
-6. Do NOT introduce unnecessary dependencies.
-7. Do NOT redesign the system.
-
-TESTING
--------
-
-If tests exist, update them.
-
-{retry_section}
-
-{diff_section}
+Modify ONLY these files.
 
 OUTPUT FORMAT
 -------------
-
-Return ONLY the files that changed.
-
-Use this exact format:
-
 FILE: path/to/file.py
 <file contents>
 
-Do not include markdown.
+{retry_section}
+{diff_section}
 """
 
 
 # --------------------------------------------------------
-# run codex
+# codex execution
 # --------------------------------------------------------
 
 def run_codex(prompt):
@@ -228,7 +185,7 @@ def run_codex(prompt):
 
 
 # --------------------------------------------------------
-# apply codex output
+# safe file application
 # --------------------------------------------------------
 
 def apply_changes(output):
@@ -241,7 +198,7 @@ def apply_changes(output):
         if line.startswith("FILE:"):
 
             if current_file:
-                Path(current_file).write_text("\n".join(buffer) + "\n")
+                write_safe(current_file, "\n".join(buffer))
                 buffer = []
 
             current_file = line.replace("FILE:", "").strip()
@@ -250,11 +207,29 @@ def apply_changes(output):
             buffer.append(line)
 
     if current_file:
-        Path(current_file).write_text("\n".join(buffer) + "\n")
+        write_safe(current_file, "\n".join(buffer))
+
+
+def write_safe(path, content):
+
+    if content.strip() == "":
+        raise RuntimeError("Codex returned empty file")
+
+    with tempfile.TemporaryDirectory() as tmp:
+
+        tmp_file = Path(tmp) / Path(path).name
+        tmp_file.write_text(content)
+
+        subprocess.run(
+            ["python", "-m", "py_compile", str(tmp_file)],
+            check=True
+        )
+
+        Path(path).write_text(content + "\n")
 
 
 # --------------------------------------------------------
-# run tests
+# testing
 # --------------------------------------------------------
 
 def run_tests():
@@ -266,7 +241,7 @@ def run_tests():
 
 
 # --------------------------------------------------------
-# execute task
+# task executor
 # --------------------------------------------------------
 
 def execute_task(task):
@@ -311,31 +286,24 @@ def execute_task(task):
 
             print("Codex error:", previous_error)
 
-            # loop protection
             if current_diff == previous_diff:
-                print("Retry produced identical diff. Aborting retries.\n")
+                print("Retry produced identical diff. Aborting.\n")
                 return False
 
             previous_diff = current_diff
-
             retries += 1
-
-            if retries < MAX_RETRIES:
-                print("Retrying with error + diff feedback...\n")
-            else:
-                print("Max retries reached.\n")
 
     return False
 
 
 # --------------------------------------------------------
-# main loop
+# orchestrator
 # --------------------------------------------------------
 
 def main():
 
     print("\n==============================")
-    print(" BRAT Codex Orchestrator ")
+    print(" Wall_Bug Codex Orchestrator ")
     print("==============================\n")
 
     enforce_contract()
@@ -348,18 +316,28 @@ def main():
         print("No tasks remaining.")
         return
 
-    print(f"{len(pending)} tasks scheduled\n")
+    print(f"{len(pending)} tasks ready\n")
 
-    for task in pending:
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
 
-        success = execute_task(task)
+        futures = {pool.submit(execute_task, task): task for task in pending}
 
-        if success:
-            task["status"] = "done"
-        else:
-            task["status"] = "failed"
+        for future in as_completed(futures):
 
-        save_tasks(tasks)
+            task = futures[future]
+
+            try:
+                success = future.result()
+            except Exception as e:
+                print("Worker crashed:", e)
+                success = False
+
+            if success:
+                task["status"] = "done"
+            else:
+                task["status"] = "failed"
+
+            save_tasks(tasks)
 
     print("\nRun complete\n")
 

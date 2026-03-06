@@ -1,3 +1,6 @@
+import subprocess
+import tempfile
+
 from .filesystem_guard import ensure_task_filesystem, verify_task_files
 from .git_tools import git_commit, get_last_diff
 from .codex_runner import run_codex
@@ -32,7 +35,21 @@ def apply_changes(output):
     if current_file:
         
         content = "\n".join(buffer) + "\n"
-        Path(current_file).write_text(content)
+        
+        with tempfile.TemporaryDirectory() as tmp:
+
+            tmp_file = Path(tmp) / Path(current_file).name
+            tmp_file.write_text(content)
+
+            # verify python syntax before touching repo
+            subprocess.run(
+                ["python", "-m", "py_compile", str(tmp_file)],
+                check=True
+            )
+
+            Path(current_file).write_text(content)
+
+
         clean_markdown_blocks()
 
 
