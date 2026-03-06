@@ -377,7 +377,7 @@
     "outputs": [
       "src/wallbug/config/config.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-030",

@@ -301,3 +301,10 @@ def record_once(
     target = recorder.start(duration=duration, output_path=output_path)
     recorder.wait()
     return target
+
+
+__all__ = [
+    "RecorderError",
+    "Recorder",
+    "record_once",
+]
