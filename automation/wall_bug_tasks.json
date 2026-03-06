@@ -1541,7 +1541,7 @@
       "src/wallbug/config.py",
       "setup.sh"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-116",
