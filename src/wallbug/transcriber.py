@@ -55,6 +55,7 @@ def _load_config_symbols() -> tuple[type[Any], Any]:
             try:
                 spec.loader.exec_module(module)
             except Exception as exc:
+                sys.modules.pop(legacy_module_name, None)
                 _BOOTSTRAP_LOGGER.error(
                     "Failed to execute legacy config module %s: %s",
                     legacy_module_path,
@@ -95,9 +96,13 @@ class Transcriber:
 
         try:
             self.config = config or load_config()
+        except TranscriptionError:
+            raise
         except Exception as exc:
             self.logger.error("Unable to load transcription configuration: %s", exc)
-            raise TranscriptionError("Unable to load transcription configuration: {}".format(exc)) from exc
+            raise TranscriptionError(
+                "Unable to load transcription configuration: {}".format(exc)
+            ) from exc
 
         self.whisper_path = whisper_path or self.config.tools.whisper_cpp_path
         if not str(self.whisper_path).strip():
@@ -105,6 +110,8 @@ class Transcriber:
 
         try:
             self.archive_manager = ArchiveManager(config=self.config)
+        except TranscriptionError:
+            raise
         except Exception as exc:
             self.logger.error("Unable to initialize archive manager: %s", exc)
             raise TranscriptionError("Unable to initialize archive manager: {}".format(exc)) from exc
@@ -228,6 +235,7 @@ class Transcriber:
             try:
                 transcript_text = generated.read_text(encoding="utf-8")
             except (OSError, UnicodeError) as exc:
+                self.logger.error("Unable to read generated transcript %s: %s", generated, exc)
                 raise TranscriptionError(
                     "Unable to read generated transcript {}: {}".format(generated, exc)
                 ) from exc
