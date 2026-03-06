@@ -1619,7 +1619,7 @@
     "outputs": [
       "/etc/systemd/system/myapp.service"
     ],
-    "status": "todo"
+    "status": "failed"
   },
   {
     "id": "WALLBUG-122",
