@@ -1913,7 +1913,7 @@
     "outputs": [
       "src/wallbug/utils.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-143",
