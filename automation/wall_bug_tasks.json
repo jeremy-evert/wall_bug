@@ -1467,7 +1467,7 @@
     "outputs": [
       "systemd/wallbug.service"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-110",
