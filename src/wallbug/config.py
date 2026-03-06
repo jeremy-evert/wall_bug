@@ -92,7 +92,7 @@ class PathsConfig:
 
 
 @dataclass
-class RecorderConfig:
+class RecorderSettings:
     sample_rate: int = 16000
     channels: int = 1
     chunk_size: int = 1024
@@ -102,8 +102,8 @@ class RecorderConfig:
 
     @classmethod
     def from_dict(
-        cls, data: Mapping[str, Any], base: Optional["RecorderConfig"] = None
-    ) -> "RecorderConfig":
+        cls, data: Mapping[str, Any], base: Optional["RecorderSettings"] = None
+    ) -> "RecorderSettings":
         base = base or cls()
         return cls(
             sample_rate=int(data.get("sample_rate", base.sample_rate)),
@@ -115,6 +115,9 @@ class RecorderConfig:
             max_record_seconds=int(data.get("max_record_seconds", base.max_record_seconds)),
             output_format=str(data.get("output_format", base.output_format)),
         )
+
+
+RecorderConfig = RecorderSettings
 
 
 @dataclass
@@ -188,7 +191,7 @@ class ToolsConfig:
 @dataclass
 class Config:
     paths: PathsConfig = field(default_factory=PathsConfig)
-    recorder: RecorderConfig = field(default_factory=RecorderConfig)
+    recorder: RecorderSettings = field(default_factory=RecorderSettings)
     transcription: TranscriptionConfig = field(default_factory=TranscriptionConfig)
     llm: LLMConfig = field(default_factory=LLMConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
@@ -200,7 +203,7 @@ class Config:
         base = base or cls()
         return cls(
             paths=PathsConfig.from_dict(data.get("paths", {}), base.paths),
-            recorder=RecorderConfig.from_dict(data.get("recorder", {}), base.recorder),
+            recorder=RecorderSettings.from_dict(data.get("recorder", {}), base.recorder),
             transcription=TranscriptionConfig.from_dict(
                 data.get("transcription", {}), base.transcription
             ),

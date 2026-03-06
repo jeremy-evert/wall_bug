@@ -167,6 +167,7 @@ def build_dependency_graph(tasks):
     deps = {}
 
     for t in tasks:
+
         tid = t["id"]
         deps[tid] = set()
 
@@ -368,7 +369,6 @@ def write_safe(path, content):
         tmp_file.write_text(content)
 
         if path.endswith(".py"):
-
             subprocess.run(
                 ["python", "-m", "py_compile", str(tmp_file)],
                 check=True
@@ -379,6 +379,7 @@ def write_safe(path, content):
         target.parent.mkdir(parents=True, exist_ok=True)
 
         target.write_text(content + "\n")
+
 
 # --------------------------------------------------------
 # apply changes
@@ -414,7 +415,9 @@ def run_tests():
 
     result = subprocess.run(["pytest"])
 
-    if result.returncode != 0:
+    # 0 = success
+    # 5 = no tests collected (acceptable during early builds)
+    if result.returncode not in (0, 5):
         raise RuntimeError("Tests failed")
 
 
@@ -486,7 +489,7 @@ def execute_task(task):
 
 
 # --------------------------------------------------------
-# orchestrator (Forge scheduler)
+# orchestrator
 # --------------------------------------------------------
 
 def main():

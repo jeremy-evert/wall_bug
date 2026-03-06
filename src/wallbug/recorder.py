@@ -2,14 +2,46 @@
 
 from __future__ import annotations
 
+import importlib.util
 import math
 import signal
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-from wallbug.config import Config, load_config
+
+if TYPE_CHECKING:
+    from wallbug.config import Config
+
+
+def _load_config_symbols() -> tuple[type[Any], Any]:
+    try:
+        from wallbug.config import Config as runtime_config_class, load_config as runtime_load_config
+
+        return runtime_config_class, runtime_load_config
+    except Exception:
+        legacy_module_name = "wallbug._recorder_legacy_config"
+        legacy_module_path = Path(__file__).resolve().with_name("config.py")
+
+        module = sys.modules.get(legacy_module_name)
+        if module is None:
+            spec = importlib.util.spec_from_file_location(
+                legacy_module_name,
+                legacy_module_path,
+            )
+            if spec is None or spec.loader is None:
+                raise ImportError(f"Unable to load config module from {legacy_module_path}")
+
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[legacy_module_name] = module
+            spec.loader.exec_module(module)
+
+        return module.Config, module.load_config
+
+
+Config, load_config = _load_config_symbols()
 
 
 class RecorderError(RuntimeError):
@@ -240,10 +272,10 @@ class Recorder:
     def _resolve_duration(self, duration: Optional[float]) -> Optional[float]:
         if duration is None:
             configured = float(self.config.recorder.max_record_seconds)
-            if configured <= 0:
-                return None
             if not math.isfinite(configured):
                 raise RecorderError("Configured max_record_seconds must be finite.")
+            if configured <= 0:
+                return None
             return configured
 
         value = float(duration)

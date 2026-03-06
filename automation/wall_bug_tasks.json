@@ -9,7 +9,7 @@
     "outputs": [
       "src/wallbug/cli.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-002",
@@ -35,7 +35,7 @@
     "outputs": [
       "src/wallbug/config.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-004",
@@ -47,7 +47,7 @@
     "outputs": [
       "src/wallbug/logging.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-005",
@@ -76,7 +76,7 @@
     "outputs": [
       "src/wallbug/cli.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-007",
@@ -124,7 +124,7 @@
     "outputs": [
       "pyproject.toml"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-011",
@@ -136,7 +136,7 @@
     "outputs": [
       "setup.sh"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-012",
@@ -184,7 +184,7 @@
     "outputs": [
       "src/wallbug/metadata.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-016",
@@ -196,7 +196,7 @@
     "outputs": [
       "src/wallbug/config.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-017",
@@ -306,7 +306,7 @@
     "outputs": [
       "src/wallbug/config/constants.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-025",
@@ -404,7 +404,7 @@
     "outputs": [
       "src/wallbug/commands/__init__.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-032",
@@ -430,7 +430,7 @@
     "outputs": [
       "src/wallbug/commands/daemon.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-034",
@@ -456,7 +456,7 @@
     "outputs": [
       "src/wallbug/commands/transcribe.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-036",
@@ -482,7 +482,7 @@
     "outputs": [
       "src/wallbug/commands/summarize_day.py"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-038",
@@ -740,7 +740,7 @@
     "outputs": [
       "src/wallbug/config/constants.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-057",
