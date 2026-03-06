@@ -430,7 +430,7 @@
     "outputs": [
       "src/wallbug/commands/daemon.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-034",
