@@ -810,7 +810,7 @@
       "src/wallbug/archive.py",
       "src/wallbug/transcriber.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-062",
