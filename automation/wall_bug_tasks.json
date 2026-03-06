@@ -645,7 +645,7 @@
     "outputs": [
       "src/wallbug/audio_processor.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-050",
