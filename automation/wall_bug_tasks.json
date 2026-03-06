@@ -184,7 +184,7 @@
     "outputs": [
       "src/wallbug/metadata.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-016",
