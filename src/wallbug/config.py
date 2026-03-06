@@ -11,6 +11,17 @@ from typing import Any, Mapping, Optional
 
 ENV_PREFIX = "WALLBUG_"
 
+CONFIG_PATH_ENV_VARS: tuple[str, ...] = (
+    f"{ENV_PREFIX}CONFIG_FILE",
+    f"{ENV_PREFIX}CONFIG_PATH",
+    f"{ENV_PREFIX}CONFIG",
+)
+
+ENV_FILE_ENV_VARS: tuple[str, ...] = (
+    f"{ENV_PREFIX}ENV_FILE",
+    f"{ENV_PREFIX}ENV_PATH",
+)
+
 
 def _to_bool(value: str) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
@@ -77,6 +88,101 @@ def _candidate_env_suffixes(path: str) -> list[str]:
         if candidate not in deduped:
             deduped.append(candidate)
     return deduped
+
+
+def _default_config_candidates() -> list[Path]:
+    home = Path.home()
+    return [
+        home / ".wallbug" / "config.json",
+        home / ".config" / "wallbug" / "config.json",
+        Path.cwd() / "config.json",
+    ]
+
+
+def _default_env_file_candidates() -> list[Path]:
+    home = Path.home()
+    return [
+        home / ".wallbug" / "wallbug.env",
+        home / ".config" / "wallbug" / "wallbug.env",
+        Path.cwd() / ".env.wallbug",
+    ]
+
+
+def _normalize_candidate_paths(paths: list[str | Path | None]) -> list[Path]:
+    normalized: list[Path] = []
+    seen: set[str] = set()
+    for candidate in paths:
+        if candidate is None:
+            continue
+        path = Path(candidate).expanduser()
+        key = str(path)
+        if key in seen:
+            continue
+        seen.add(key)
+        normalized.append(path)
+    return normalized
+
+
+def _strip_env_value(raw: str) -> str:
+    value = raw.strip()
+    if not value:
+        return value
+    if (value.startswith('"') and value.endswith('"')) or (
+        value.startswith("'") and value.endswith("'")
+    ):
+        return value[1:-1]
+    return value
+
+
+def _load_env_file(path: Path) -> None:
+    if not path.exists() or not path.is_file():
+        return
+
+    try:
+        content = path.read_text(encoding="utf-8")
+    except OSError:
+        return
+
+    for line in content.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        if stripped.startswith("export "):
+            stripped = stripped[len("export ") :].lstrip()
+
+        if "=" not in stripped:
+            continue
+
+        key, raw_value = stripped.split("=", 1)
+        env_key = key.strip()
+        if not env_key:
+            continue
+
+        os.environ.setdefault(env_key, _strip_env_value(raw_value))
+
+
+def _load_service_env_overrides() -> None:
+    candidates: list[str | Path | None] = [os.getenv(name) for name in ENV_FILE_ENV_VARS]
+    candidates.extend(_default_env_file_candidates())
+    for path in _normalize_candidate_paths(candidates):
+        _load_env_file(path)
+
+
+def _resolve_config_path(config_path: Optional[str | Path]) -> Optional[Path]:
+    if config_path is not None:
+        return Path(config_path).expanduser()
+
+    for env_name in CONFIG_PATH_ENV_VARS:
+        value = os.getenv(env_name)
+        if value:
+            return Path(value).expanduser()
+
+    for candidate in _default_config_candidates():
+        if candidate.exists():
+            return candidate
+
+    return None
 
 
 @dataclass
@@ -334,7 +440,6 @@ class Config:
                 return
             _set_nested_value(data, path, coerced)
 
-        # Apply canonical and structured env vars first.
         for env_name, raw_value in os.environ.items():
             if not env_name.startswith(ENV_PREFIX):
                 continue
@@ -365,7 +470,6 @@ class Config:
 
             apply_override(path, raw_value)
 
-        # Legacy aliases applied last so they retain backward-compatible precedence.
         for suffix, path in env_aliases.items():
             raw_value = os.getenv(f"{ENV_PREFIX}{suffix}")
             if raw_value is None:
@@ -379,7 +483,10 @@ Configuration = Config
 
 
 def load_config(config_path: Optional[str | Path] = None) -> Config:
+    _load_service_env_overrides()
+
     config = Config()
-    if config_path is not None:
-        config = Config.from_file(config_path, base=config)
+    resolved_config_path = _resolve_config_path(config_path)
+    if resolved_config_path is not None:
+        config = Config.from_file(resolved_config_path, base=config)
     return config.with_env_overrides()
