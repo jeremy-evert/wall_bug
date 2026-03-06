@@ -1,0 +1,14 @@
+[project]
+name = "wallbug"
+version = "0.1.0"
+description = "CLI tool that captures spoken ideas and converts them into structured notes."
+readme = "README.md"
+requires_python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+wallbug = "wallbug.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["wallbug*", "brat*"]

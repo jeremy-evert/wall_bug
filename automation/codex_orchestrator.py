@@ -3,6 +3,7 @@
 import json
 import subprocess
 import tempfile
+import re
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -10,6 +11,8 @@ TASK_FILE = "automation/wall_bug_tasks.json"
 
 MAX_WORKERS = 4
 MAX_RETRIES = 5
+
+build_memory = []
 
 
 # --------------------------------------------------------
@@ -97,9 +100,28 @@ def save_tasks(tasks):
         json.dump(tasks, f, indent=2)
 
 
-def get_pending(tasks):
+# --------------------------------------------------------
+# duplicate detection
+# --------------------------------------------------------
 
-    return [t for t in tasks if t["status"] == "todo"]
+def filter_duplicate_tasks(tasks):
+
+    seen = set()
+    result = []
+
+    for t in tasks:
+
+        outputs = tuple(sorted(t.get("outputs", [])))
+
+        if outputs in seen:
+            print(f"🔁 Skipping duplicate {t['id']}")
+            t["status"] = "duplicate"
+            continue
+
+        seen.add(outputs)
+        result.append(t)
+
+    return result
 
 
 # --------------------------------------------------------
@@ -136,30 +158,6 @@ def task_is_up_to_date(task):
 
 
 # --------------------------------------------------------
-# filesystem helpers
-# --------------------------------------------------------
-
-def ensure_task_filesystem(task):
-
-    for f in task.get("files", []):
-        Path(f).parent.mkdir(parents=True, exist_ok=True)
-
-
-def verify_task_files(task):
-
-    missing = []
-
-    for f in task.get("files", []):
-        if not Path(f).exists():
-            missing.append(f)
-
-    if missing:
-        raise RuntimeError(
-            "Expected files missing:\n" + "\n".join(missing)
-        )
-
-
-# --------------------------------------------------------
 # git helpers
 # --------------------------------------------------------
 
@@ -188,7 +186,7 @@ def git_has_changes():
 def git_commit(task_id):
 
     if not git_has_changes():
-        print("No changes detected, skipping commit.")
+        print("No changes detected.")
         return
 
     subprocess.run(["git", "add", "."])
@@ -211,7 +209,14 @@ def build_prompt(task, previous_error=None, last_diff=None):
 
     file_context = load_file_context(task["files"])
 
+    memory_section = ""
+
+    if build_memory:
+        memory_section = "\nPREVIOUS SUCCESSFUL TASKS\n------------------------\n"
+        memory_section += "\n".join(build_memory)
+
     retry_section = ""
+
     if previous_error:
         retry_section = f"""
 PREVIOUS FAILURE
@@ -221,10 +226,11 @@ Fix the issue above.
 """
 
     diff_section = ""
+
     if last_diff:
         diff_section = f"""
-LAST CHANGES MADE
------------------
+LAST CHANGES
+------------
 {last_diff}
 """
 
@@ -235,12 +241,11 @@ PROJECT
 -------
 Wall_Bug
 
-A CLI tool that captures spoken ideas and converts them
-into structured notes.
-
 PROJECT STRUCTURE
 -----------------
 {repo_tree}
+
+{memory_section}
 
 TASK
 ----
@@ -257,12 +262,10 @@ CURRENT FILE CONTENT
 RULES
 -----
 Modify ONLY the allowed files.
-Do NOT invent modules.
-Respect the existing project structure.
 
 OUTPUT FORMAT
 -------------
-FILE: path/to/file.py
+FILE: path/to/file
 <file contents>
 
 {retry_section}
@@ -289,7 +292,42 @@ def run_codex(prompt):
 
 
 # --------------------------------------------------------
-# safe file application
+# markdown cleanup
+# --------------------------------------------------------
+
+def strip_markdown(text):
+
+    text = re.sub(r"```[a-zA-Z]*", "", text)
+    text = text.replace("```", "")
+
+    return text.strip()
+
+
+# --------------------------------------------------------
+# safe file write
+# --------------------------------------------------------
+
+def write_safe(path, content):
+
+    content = strip_markdown(content)
+
+    with tempfile.TemporaryDirectory() as tmp:
+
+        tmp_file = Path(tmp) / Path(path).name
+        tmp_file.write_text(content)
+
+        if path.endswith(".py"):
+
+            subprocess.run(
+                ["python", "-m", "py_compile", str(tmp_file)],
+                check=True
+            )
+
+        Path(path).write_text(content + "\n")
+
+
+# --------------------------------------------------------
+# apply changes
 # --------------------------------------------------------
 
 def apply_changes(output):
@@ -314,26 +352,8 @@ def apply_changes(output):
         write_safe(current_file, "\n".join(buffer))
 
 
-def write_safe(path, content):
-
-    if content.strip() == "":
-        raise RuntimeError("Codex returned empty file")
-
-    with tempfile.TemporaryDirectory() as tmp:
-
-        tmp_file = Path(tmp) / Path(path).name
-        tmp_file.write_text(content)
-
-        subprocess.run(
-            ["python", "-m", "py_compile", str(tmp_file)],
-            check=True
-        )
-
-        Path(path).write_text(content + "\n")
-
-
 # --------------------------------------------------------
-# testing
+# tests
 # --------------------------------------------------------
 
 def run_tests():
@@ -345,7 +365,7 @@ def run_tests():
 
 
 # --------------------------------------------------------
-# task executor
+# executor
 # --------------------------------------------------------
 
 def execute_task(task):
@@ -355,8 +375,6 @@ def execute_task(task):
     print(task["description"])
     print("===================================\n")
 
-    ensure_task_filesystem(task)
-
     retries = 0
     previous_error = None
     previous_diff = None
@@ -365,27 +383,30 @@ def execute_task(task):
 
         try:
 
-            before_diff = repo_diff()
+            before = repo_diff()
 
-            prompt = build_prompt(task, previous_error, before_diff)
+            prompt = build_prompt(task, previous_error, before)
 
             output = run_codex(prompt)
 
             apply_changes(output)
 
-            after_diff = repo_diff()
+            after = repo_diff()
 
-            if before_diff == after_diff:
-                print("🟡 Codex produced no changes.\n")
+            if before == after:
+                print("🟡 No changes")
                 return True
-
-            verify_task_files(task)
 
             run_tests()
 
             git_commit(task["id"])
 
-            print("✅ Task completed\n")
+            build_memory.append(f"{task['id']} : {task['description']}")
+
+            if len(build_memory) > 10:
+                build_memory.pop(0)
+
+            print("✅ Task complete\n")
 
             return True
 
@@ -397,7 +418,7 @@ def execute_task(task):
             print("Codex error:", previous_error)
 
             if current_diff == previous_diff:
-                print("Retry produced identical diff. Aborting.\n")
+                print("Retry produced identical diff.")
                 return False
 
             previous_diff = current_diff
@@ -438,9 +459,7 @@ def main():
 
         runnable.append(t)
 
-    if not runnable:
-        print("No tasks remaining.")
-        return
+    runnable = filter_duplicate_tasks(runnable)
 
     print(f"{len(runnable)} tasks ready\n")
 

@@ -38,6 +38,9 @@ def apply_changes(output):
         
         with tempfile.TemporaryDirectory() as tmp:
 
+            if content.strip() == "":
+                raise RuntimeError("Codex returned empty file")
+
             tmp_file = Path(tmp) / Path(current_file).name
             tmp_file.write_text(content)
 
