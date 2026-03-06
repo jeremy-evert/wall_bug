@@ -404,7 +404,7 @@
     "outputs": [
       "src/wallbug/commands/__init__.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-032",
