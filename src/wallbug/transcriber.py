@@ -1,22 +1,16 @@
-"""Main transcriber script for Wall_Bug."""
+"""Transcription utilities for Wall_Bug."""
 
 from __future__ import annotations
 
 import argparse
 import importlib.util
 import json
-import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional
 
-from wallbug.audio_processor import (
-    AudioProcessorError,
-    audio_requires_conversion,
-    convert_audio_file,
-)
+from wallbug.archive import ArchiveError, ArchiveManager
 from wallbug.metadata import attach_metadata
 
 
@@ -63,18 +57,17 @@ class Transcriber:
         self,
         config: Optional[Config] = None,
         whisper_path: Optional[str] = None,
-        ffmpeg_path: Optional[str] = None,
     ) -> None:
         self.config = config or load_config()
         self.whisper_path = whisper_path or self.config.tools.whisper_cpp_path
-        self.ffmpeg_path = ffmpeg_path or self.config.tools.ffmpeg_path
+        self.archive_manager = ArchiveManager(config=self.config)
 
     def resolve_source(self, source: Optional[str | Path]) -> Path:
         if source is not None:
             candidate = Path(source).expanduser()
             if candidate.exists() and candidate.is_file():
                 return candidate
-            raise TranscriptionError("Audio source not found: {}".format(candidate))
+            raise TranscriptionError(f"Audio source not found: {candidate}")
 
         audio_dir = self.config.paths.audio_dir.expanduser()
         if not audio_dir.exists():
@@ -116,91 +109,84 @@ class Transcriber:
         include_metadata: bool = True,
     ) -> Path:
         src = self.resolve_source(source)
-        prepared_src, temp_dir = self._prepare_source_for_transcription(src)
+        target = self.build_output_path(src, output_path=output_path)
+        target.parent.mkdir(parents=True, exist_ok=True)
 
-        try:
-            target = self.build_output_path(src, output_path=output_path)
-            target.parent.mkdir(parents=True, exist_ok=True)
+        target_base = target.with_suffix("")
+        command = self._build_command(
+            source=src,
+            output_base=target_base,
+            model=model,
+            language=language,
+            device=device,
+            beam_size=beam_size,
+        )
 
-            target_base = target.with_suffix("")
-            command = self._build_command(
-                source=prepared_src,
-                output_base=target_base,
-                model=model,
-                language=language,
-                device=device,
-                beam_size=beam_size,
+        result = self._run(command)
+        if result.returncode != 0:
+            message = result.stderr.strip() or result.stdout.strip() or "Unknown transcription error."
+            raise TranscriptionError(message)
+
+        generated = self._resolve_generated_file(src, target, target_base)
+        transcript_text = generated.read_text(encoding="utf-8")
+
+        if include_metadata:
+            payload = attach_metadata(
+                transcript_text,
+                metadata={
+                    "source": str(src.resolve()),
+                    "transcriber": str(self.whisper_path),
+                    "model": model or self.config.transcription.model,
+                    "language": language or self.config.transcription.language,
+                    "device": device or self.config.transcription.device,
+                    "beam_size": int(
+                        self.config.transcription.beam_size if beam_size is None else beam_size
+                    ),
+                },
+            )
+            target.write_text(payload["transcript"], encoding="utf-8")
+            archive_path = self._archive_transcript_text(
+                payload["transcript"],
+                source=src,
+                transcript_target=target,
+            )
+            payload["metadata"]["archive_transcript"] = str(archive_path)
+            metadata_path = target.with_suffix(".metadata.json")
+            metadata_path.write_text(
+                json.dumps(payload["metadata"], indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+        else:
+            target.write_text(transcript_text, encoding="utf-8")
+            self._archive_transcript_text(
+                transcript_text,
+                source=src,
+                transcript_target=target,
             )
 
-            result = self._run(command)
-            if result.returncode != 0:
-                message = (
-                    result.stderr.strip() or result.stdout.strip() or "Unknown transcription error."
-                )
-                raise TranscriptionError(message)
+        if generated.resolve() != target.resolve():
+            generated.unlink(missing_ok=True)
 
-            generated = self._resolve_generated_file(prepared_src, target, target_base)
-            transcript_text = generated.read_text(encoding="utf-8")
+        return target
 
-            if include_metadata:
-                payload = attach_metadata(
-                    transcript_text,
-                    metadata={
-                        "source": str(src.resolve()),
-                        "transcription_source": str(prepared_src.resolve()),
-                        "transcriber": str(self.whisper_path),
-                        "model": model or self.config.transcription.model,
-                        "language": language or self.config.transcription.language,
-                        "device": device or self.config.transcription.device,
-                        "beam_size": int(
-                            self.config.transcription.beam_size if beam_size is None else beam_size
-                        ),
-                    },
-                )
-                target.write_text(payload["transcript"], encoding="utf-8")
-                metadata_path = target.with_suffix(".metadata.json")
-                metadata_path.write_text(
-                    json.dumps(payload["metadata"], indent=2, sort_keys=True) + "\n",
-                    encoding="utf-8",
-                )
-            else:
-                target.write_text(transcript_text, encoding="utf-8")
-
-            if generated.resolve() != target.resolve():
-                generated.unlink(missing_ok=True)
-
-            return target
-        finally:
-            if temp_dir is not None:
-                shutil.rmtree(temp_dir, ignore_errors=True)
-
-    def _prepare_source_for_transcription(self, source: Path) -> tuple[Path, Optional[Path]]:
-        target_sample_rate = int(self.config.recorder.sample_rate)
-        target_channels = int(self.config.recorder.channels)
-
-        if not audio_requires_conversion(
-            source,
-            sample_rate=target_sample_rate,
-            channels=target_channels,
-        ):
-            return source, None
-
-        temp_dir = Path(tempfile.mkdtemp(prefix="wallbug_transcriber_"))
-        converted_path = temp_dir / "{}.wav".format(source.stem)
-
+    def _archive_transcript_text(
+        self,
+        text: str,
+        source: Path,
+        transcript_target: Path,
+    ) -> Path:
+        entry_id = (
+            self.archive_manager.entry_id_from_path(source)
+            or self.archive_manager.entry_id_from_path(transcript_target)
+        )
         try:
-            converted = convert_audio_file(
-                source,
-                destination=converted_path,
-                sample_rate=target_sample_rate,
-                channels=target_channels,
-                ffmpeg_path=self.ffmpeg_path,
-                overwrite=True,
+            return self.archive_manager.archive_transcript(
+                text=text,
+                entry_id=entry_id,
+                filename=transcript_target.name,
             )
-        except AudioProcessorError as exc:
-            raise TranscriptionError("Audio conversion failed: {}".format(exc)) from exc
-
-        return converted, temp_dir
+        except (ArchiveError, OSError, UnicodeError) as exc:
+            raise TranscriptionError("Unable to archive transcript: {}".format(exc)) from exc
 
     def _build_command(
         self,
@@ -274,60 +260,22 @@ def transcribe_once(
     return transcriber.transcribe(source=source, output_path=output_path)
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="wallbug-transcriber",
-        description="Transcribe Wall_Bug audio files.",
-    )
-    parser.add_argument("source", nargs="?", default=None, help="Optional audio source path.")
-    parser.add_argument(
-        "--output",
-        default=None,
-        help="Output transcript path (file or directory).",
-    )
-    parser.add_argument("--model", default=None, help="Optional transcription model override.")
-    parser.add_argument("--language", default=None, help="Optional language override.")
-    parser.add_argument("--device", default=None, help="Optional device override (cpu/gpu).")
-    parser.add_argument("--beam-size", type=int, default=None, help="Optional beam size override.")
-    parser.add_argument(
-        "--no-metadata",
-        action="store_true",
-        help="Disable metadata sidecar generation.",
-    )
-    return parser
-
-
-def main(argv: Optional[list[str]] = None) -> int:
-    parser = build_parser()
-    args = parser.parse_args(argv)
-
-    transcriber = Transcriber()
+def transcribe_command(args: argparse.Namespace) -> int:
+    source = getattr(args, "source", None)
+    output = getattr(args, "output", None)
     try:
-        output = transcriber.transcribe(
-            source=args.source,
-            output_path=args.output,
-            model=args.model,
-            language=args.language,
-            device=args.device,
-            beam_size=args.beam_size,
-            include_metadata=not bool(args.no_metadata),
-        )
+        target = transcribe_once(source=source, output_path=output)
     except TranscriptionError as exc:
         print("Transcription failed: {}".format(exc), file=sys.stderr)
         return 1
 
-    print(str(output))
+    print(str(target))
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
 
 
 __all__ = [
     "TranscriptionError",
     "Transcriber",
     "transcribe_once",
-    "build_parser",
-    "main",
+    "transcribe_command",
 ]

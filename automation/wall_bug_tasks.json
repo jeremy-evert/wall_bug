@@ -1038,7 +1038,7 @@
       "src/wallbug/metadata.py",
       "src/wallbug/logging.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-078",

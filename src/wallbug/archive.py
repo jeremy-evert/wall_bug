@@ -210,6 +210,26 @@ class ArchiveManager:
         self.update_metadata(eid, {"files": {"transcript": str(target)}})
         return target
 
+    def archive_transcript_file(
+        self,
+        source: str | Path,
+        entry_id: Optional[str] = None,
+        filename: Optional[str] = None,
+        created_at: Optional[datetime] = None,
+    ) -> Path:
+        src = Path(source).expanduser()
+        if not src.exists() or not src.is_file():
+            raise ArchiveError(f"Transcript source not found: {src}")
+
+        text = src.read_text(encoding="utf-8")
+        target_name = src.name if filename is None else filename
+        return self.archive_transcript(
+            text=text,
+            entry_id=entry_id,
+            filename=target_name,
+            created_at=created_at,
+        )
+
     def archive_note(
         self,
         text: str,
@@ -239,6 +259,40 @@ class ArchiveManager:
         target.write_text(text, encoding="utf-8")
         self.update_metadata(eid, {"files": {"summary": str(target)}})
         return target
+
+    def entry_id_from_path(self, value: str | Path) -> Optional[str]:
+        candidate = Path(value).expanduser()
+
+        try:
+            resolved = candidate.resolve()
+            root = self.archive_root.resolve()
+        except OSError:
+            return None
+
+        if resolved == root:
+            return None
+        if root not in resolved.parents:
+            return None
+
+        try:
+            relative = resolved.relative_to(root)
+        except ValueError:
+            return None
+
+        parts = relative.parts
+        if len(parts) < 4:
+            return None
+
+        entry_id = parts[3]
+        if not entry_id:
+            return None
+
+        if len(parts) > 4:
+            category = parts[4]
+            if category not in {"audio", "transcripts", "notes", "summaries"}:
+                return None
+
+        return entry_id
 
     def metadata_path(
         self, entry_id: str, created_at: Optional[datetime] = None
@@ -355,6 +409,22 @@ def archive_transcript(
     )
 
 
+def archive_transcript_file(
+    source: str | Path,
+    config: Optional[Config] = None,
+    entry_id: Optional[str] = None,
+    filename: Optional[str] = None,
+    created_at: Optional[datetime] = None,
+) -> Path:
+    manager = ArchiveManager(config=config)
+    return manager.archive_transcript_file(
+        source=source,
+        entry_id=entry_id,
+        filename=filename,
+        created_at=created_at,
+    )
+
+
 def archive_note(
     text: str,
     config: Optional[Config] = None,
@@ -418,6 +488,7 @@ __all__ = [
     "create_entry",
     "archive_recording",
     "archive_transcript",
+    "archive_transcript_file",
     "archive_note",
     "archive_summary",
     "read_metadata",
