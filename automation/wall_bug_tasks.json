@@ -989,7 +989,7 @@
     "outputs": [
       "src/wallbug/data/metadata.json"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-075",
