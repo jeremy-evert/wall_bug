@@ -619,7 +619,7 @@
     "outputs": [
       "src/wallbug/vad.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-048",
