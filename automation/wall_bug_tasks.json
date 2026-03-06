@@ -1293,7 +1293,7 @@
     "outputs": [
       "src/wallbug/commands/search.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-097",
