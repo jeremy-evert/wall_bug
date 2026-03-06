@@ -672,7 +672,7 @@
     "outputs": [
       "src/wallbug/transcription_trigger.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-052",
