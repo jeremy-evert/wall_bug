@@ -1,307 +1,291 @@
-"""Daily note summarization for Wall_Bug."""
+"""Daily note summarization utilities for Wall_Bug."""
 
 from __future__ import annotations
 
+import importlib.util
 import re
-from collections import Counter
+import sys
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Protocol
 
-from wallbug.config import Config, load_config
 from wallbug.logging import get_logger
 
-logger = get_logger("wallbug.summarizer")
 
-_STOP_WORDS = {
-    "a",
-    "an",
-    "and",
-    "are",
-    "as",
-    "at",
-    "be",
-    "by",
-    "for",
-    "from",
-    "in",
-    "is",
-    "it",
-    "of",
-    "on",
-    "or",
-    "that",
-    "the",
-    "this",
-    "to",
-    "was",
-    "were",
-    "with",
-    "i",
-    "we",
-    "you",
-    "they",
-    "he",
-    "she",
-    "them",
-    "our",
-    "your",
-    "their",
-}
+if TYPE_CHECKING:
+    from wallbug.config import Config
+
+
+def _load_config_symbols() -> tuple[type[Any], Any]:
+    try:
+        from wallbug.config import Config as runtime_config_class, load_config as runtime_load_config
+
+        return runtime_config_class, runtime_load_config
+    except Exception:
+        legacy_module_name = "wallbug._summarizer_legacy_config"
+        legacy_module_path = Path(__file__).resolve().with_name("config.py")
+
+        module = sys.modules.get(legacy_module_name)
+        if module is None:
+            spec = importlib.util.spec_from_file_location(
+                legacy_module_name,
+                legacy_module_path,
+            )
+            if spec is None or spec.loader is None:
+                raise ImportError(f"Unable to load config module from {legacy_module_path}")
+
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[legacy_module_name] = module
+            spec.loader.exec_module(module)
+
+        return module.Config, module.load_config
+
+
+Config, load_config = _load_config_symbols()
 
 
 class SummarizerError(RuntimeError):
-    """Raised when daily summary generation fails."""
+    """Raised when summary generation cannot be completed."""
+
+
+class LLMBackend(Protocol):
+    """Protocol for optional LLM backends used by Summarizer."""
+
+    def generate_summary(self, prompt: str) -> str:
+        """Return generated summary text from the provided prompt."""
 
 
 @dataclass(frozen=True)
-class SummaryStats:
-    note_files: int
-    non_empty_notes: int
-    extracted_lines: int
-    total_words: int
+class SummaryAnalysis:
+    """Holds extracted aggregate details from note content."""
 
-    def to_dict(self) -> dict[str, int]:
-        return {
-            "note_files": self.note_files,
-            "non_empty_notes": self.non_empty_notes,
-            "extracted_lines": self.extracted_lines,
-            "total_words": self.total_words,
-        }
+    note_count: int
+    word_count: int
+    highlights: list[str]
 
 
-def parse_target_date(raw_value: str | None) -> date:
-    if raw_value is None:
-        return datetime.now().date()
-    try:
-        return date.fromisoformat(raw_value)
-    except ValueError as exc:
-        raise SummarizerError(
-            "Invalid date {!r}. Expected format: YYYY-MM-DD.".format(raw_value)
-        ) from exc
+class Summarizer:
+    """Loads daily notes and generates markdown summaries."""
 
+    def __init__(
+        self,
+        config: Optional[Config] = None,
+        llm_backend: Optional[LLMBackend] = None,
+    ) -> None:
+        self.config = config or load_config()
+        self.llm_backend = llm_backend
+        self.logger = get_logger(__name__)
 
-def _resolve_config(config: Config | None) -> Config:
-    return config or load_config()
-
-
-def _safe_read_text(path: Path) -> str:
-    try:
-        return path.read_text(encoding="utf-8")
-    except OSError:
-        logger.warning("Unable to read note file: %s", path)
-        return ""
-
-
-def _date_file_globs(target_date: date) -> tuple[str, str]:
-    return (
-        "{}*.md".format(target_date.isoformat()),
-        "{}*.md".format(target_date.strftime("%Y%m%d")),
-    )
-
-
-def _iter_note_files_for_day(notes_dir: Path, target_date: date) -> list[Path]:
-    if not notes_dir.exists() or not notes_dir.is_dir():
-        return []
-
-    candidates: dict[str, Path] = {}
-
-    for pattern in _date_file_globs(target_date):
-        for path in sorted(notes_dir.glob(pattern)):
-            if path.is_file():
-                candidates[str(path.resolve())] = path
-
-    for path in sorted(notes_dir.glob("*.md")):
-        if not path.is_file():
-            continue
+    def parse_target_date(self, value: Optional[str | date | datetime]) -> date:
+        if value is None:
+            return datetime.now().date()
+        if isinstance(value, datetime):
+            return value.date()
+        if isinstance(value, date):
+            return value
         try:
-            modified_date = datetime.fromtimestamp(path.stat().st_mtime).date()
-        except OSError:
-            continue
-        if modified_date == target_date:
-            candidates[str(path.resolve())] = path
+            return date.fromisoformat(str(value))
+        except ValueError as exc:
+            raise SummarizerError(
+                "Invalid date value {!r}. Expected YYYY-MM-DD.".format(value)
+            ) from exc
 
-    return sorted(candidates.values())
+    def list_note_files(self, target_date: Optional[str | date | datetime] = None) -> list[Path]:
+        resolved_date = self.parse_target_date(target_date)
+        notes_dir = Path(self.config.paths.notes_dir).expanduser()
+        if not notes_dir.exists() or not notes_dir.is_dir():
+            self.logger.debug("Notes directory missing: %s", notes_dir)
+            return []
 
-
-def read_daily_notes(
-    target_date: date,
-    *,
-    notes_dir: Path | None = None,
-    config: Config | None = None,
-) -> list[Path]:
-    resolved_config = _resolve_config(config)
-    resolved_notes_dir = (notes_dir or resolved_config.paths.notes_dir).expanduser()
-    note_files = _iter_note_files_for_day(resolved_notes_dir, target_date)
-    logger.info(
-        "Found %d note file(s) for %s in %s",
-        len(note_files),
-        target_date.isoformat(),
-        resolved_notes_dir,
-    )
-    return note_files
-
-
-def _clean_line(value: str) -> str:
-    line = value.strip()
-    if not line:
-        return ""
-    line = re.sub(r"^\s*[-*+]\s+", "", line)
-    line = re.sub(r"^\s*#+\s*", "", line)
-    line = re.sub(r"\s+", " ", line).strip()
-    return line
-
-
-def extract_relevant_information(note_files: Sequence[Path]) -> list[str]:
-    extracted: list[str] = []
-    for path in note_files:
-        raw = _safe_read_text(path)
-        if not raw.strip():
-            continue
-        for line in raw.splitlines():
-            candidate = _clean_line(line)
-            if candidate:
-                extracted.append(candidate)
-    return extracted
-
-
-def _top_terms(lines: Iterable[str], *, limit: int = 8) -> list[tuple[str, int]]:
-    counter: Counter[str] = Counter()
-    for line in lines:
-        for token in re.findall(r"[A-Za-z0-9']+", line.lower()):
-            if len(token) < 3:
+        selected: list[Path] = []
+        for path in sorted(notes_dir.iterdir(), reverse=True):
+            if not path.is_file() or path.suffix.lower() not in {".md", ".txt"}:
                 continue
-            if token in _STOP_WORDS:
+            file_date = self._extract_date_from_filename(path)
+            if file_date == resolved_date:
+                selected.append(path)
+
+        selected.sort()
+        return selected
+
+    def read_notes(self, target_date: Optional[str | date | datetime] = None) -> list[str]:
+        notes: list[str] = []
+        for note_path in self.list_note_files(target_date=target_date):
+            try:
+                text = note_path.read_text(encoding="utf-8").strip()
+            except OSError as exc:
+                self.logger.warning("Unable to read note %s: %s", note_path, exc)
                 continue
-            counter[token] += 1
-    return counter.most_common(limit)
+            if text:
+                notes.append(text)
+        return notes
 
+    def analyze_notes(self, notes: list[str], highlight_limit: int = 10) -> SummaryAnalysis:
+        if highlight_limit <= 0:
+            raise SummarizerError("highlight_limit must be greater than zero.")
 
-def aggregate_note_data(note_files: Sequence[Path], lines: Sequence[str]) -> SummaryStats:
-    non_empty_notes = 0
-    total_words = 0
-    for path in note_files:
-        text = _safe_read_text(path).strip()
-        if text:
-            non_empty_notes += 1
-            total_words += len(text.split())
-
-    return SummaryStats(
-        note_files=len(note_files),
-        non_empty_notes=non_empty_notes,
-        extracted_lines=len(lines),
-        total_words=total_words,
-    )
-
-
-def generate_summary_markdown(
-    target_date: date,
-    *,
-    note_files: Sequence[Path],
-    lines: Sequence[str],
-    stats: SummaryStats,
-) -> str:
-    unique_lines: list[str] = []
-    seen: set[str] = set()
-    for line in lines:
-        if line in seen:
-            continue
-        seen.add(line)
-        unique_lines.append(line)
-    highlights = unique_lines[:10]
-    top_terms = _top_terms(unique_lines, limit=8)
-
-    content: list[str] = [
-        "# Daily Summary - {}".format(target_date.isoformat()),
-        "",
-        "## Overview",
-        "- Note files found: {}".format(stats.note_files),
-        "- Non-empty notes: {}".format(stats.non_empty_notes),
-        "- Extracted lines: {}".format(stats.extracted_lines),
-        "- Total words analyzed: {}".format(stats.total_words),
-        "",
-    ]
-
-    if not note_files:
-        content.extend(
-            [
-                "## Summary",
-                "No note files were found for this day.",
-                "",
-            ]
+        word_count = sum(len(note.split()) for note in notes)
+        highlights = self._extract_highlights(notes, limit=highlight_limit)
+        return SummaryAnalysis(
+            note_count=len(notes),
+            word_count=word_count,
+            highlights=highlights,
         )
-        return "\n".join(content).rstrip() + "\n"
 
-    if not highlights:
-        content.extend(
-            [
-                "## Summary",
-                "Notes were found, but no readable content could be extracted.",
-                "",
-            ]
+    def generate_summary(
+        self,
+        target_date: Optional[str | date | datetime] = None,
+        notes: Optional[list[str]] = None,
+    ) -> str:
+        resolved_date = self.parse_target_date(target_date)
+        note_chunks = list(notes) if notes is not None else self.read_notes(target_date=resolved_date)
+        analysis = self.analyze_notes(note_chunks)
+
+        if self.llm_backend is not None and note_chunks:
+            llm_summary = self._generate_with_llm(resolved_date, note_chunks)
+            if llm_summary:
+                return self._render_summary_markdown(
+                    target_date=resolved_date,
+                    analysis=analysis,
+                    narrative=llm_summary,
+                )
+
+        return self._render_summary_markdown(
+            target_date=resolved_date,
+            analysis=analysis,
+            narrative=self._fallback_narrative(analysis),
         )
-        return "\n".join(content).rstrip() + "\n"
 
-    content.extend(["## Highlights"])
-    for line in highlights:
-        rendered = line if len(line) <= 180 else line[:177].rstrip() + "..."
-        content.append("- {}".format(rendered))
-    content.append("")
+    def save_summary(
+        self,
+        summary_text: str,
+        target_date: Optional[str | date | datetime] = None,
+    ) -> Path:
+        resolved_date = self.parse_target_date(target_date)
+        summaries_dir = Path(self.config.paths.summaries_dir).expanduser()
+        summaries_dir.mkdir(parents=True, exist_ok=True)
 
-    if top_terms:
-        content.extend(["## Frequent Terms"])
-        for term, count in top_terms:
-            content.append("- `{}` ({})".format(term, count))
-        content.append("")
+        output_path = summaries_dir / "{}.md".format(resolved_date.isoformat())
+        output_path.write_text(summary_text.rstrip() + "\n", encoding="utf-8")
+        return output_path
 
-    return "\n".join(content).rstrip() + "\n"
+    def summarize_day(
+        self,
+        target_date: Optional[str | date | datetime] = None,
+    ) -> Path:
+        resolved_date = self.parse_target_date(target_date)
+        summary_text = self.generate_summary(target_date=resolved_date)
+        output_path = self.save_summary(summary_text, target_date=resolved_date)
+        self.logger.info("Daily summary generated: %s", output_path)
+        return output_path
+
+    def _extract_date_from_filename(self, path: Path) -> Optional[date]:
+        match = re.search(r"(\d{4}-\d{2}-\d{2})", path.name)
+        if not match:
+            return None
+        try:
+            return date.fromisoformat(match.group(1))
+        except ValueError:
+            return None
+
+    def _extract_highlights(self, notes: list[str], limit: int) -> list[str]:
+        highlights: list[str] = []
+        seen: set[str] = set()
+
+        for note in notes:
+            if len(highlights) >= limit:
+                break
+            for raw_line in note.splitlines():
+                candidate = raw_line.strip()
+                if not candidate:
+                    continue
+                if candidate.startswith("#"):
+                    candidate = candidate.lstrip("#").strip()
+                if len(candidate) > 160:
+                    candidate = candidate[:157].rstrip() + "..."
+                normalized = candidate.casefold()
+                if normalized in seen:
+                    continue
+                seen.add(normalized)
+                highlights.append(candidate)
+                break
+
+        return highlights
+
+    def _build_llm_prompt(self, target_date: date, notes: list[str]) -> str:
+        joined_notes = "\n\n---\n\n".join(notes)
+        return (
+            "You are summarizing daily engineering notes. "
+            "Write concise markdown with sections: Overview, Key Decisions, Risks, Next Steps.\n"
+            "Target date: {}\n\n"
+            "Notes:\n{}"
+        ).format(target_date.isoformat(), joined_notes)
+
+    def _generate_with_llm(self, target_date: date, notes: list[str]) -> str:
+        prompt = self._build_llm_prompt(target_date, notes)
+        try:
+            response = self.llm_backend.generate_summary(prompt)
+        except Exception as exc:
+            self.logger.warning("LLM summarization failed, using fallback summary: %s", exc)
+            return ""
+
+        cleaned = response.strip()
+        if not cleaned:
+            return ""
+        return cleaned
+
+    def _fallback_narrative(self, analysis: SummaryAnalysis) -> str:
+        if analysis.note_count == 0:
+            return "No notes were found for this date."
+        if analysis.word_count == 0:
+            return "Notes were found, but they did not contain readable text."
+        return "Summarized {} notes containing {} words.".format(
+            analysis.note_count,
+            analysis.word_count,
+        )
+
+    def _render_summary_markdown(
+        self,
+        target_date: date,
+        analysis: SummaryAnalysis,
+        narrative: str,
+    ) -> str:
+        lines: list[str] = [
+            "# Daily Summary - {}".format(target_date.isoformat()),
+            "",
+            "## Overview",
+            "- Notes processed: {}".format(analysis.note_count),
+            "- Total words analyzed: {}".format(analysis.word_count),
+            "",
+            "## Summary",
+            narrative.strip() or "No summary content available.",
+            "",
+            "## Highlights",
+        ]
+
+        if analysis.highlights:
+            for item in analysis.highlights:
+                lines.append("- {}".format(item))
+        else:
+            lines.append("- No highlights available.")
+
+        lines.append("")
+        return "\n".join(lines)
 
 
-def save_daily_summary(
-    summary_text: str,
-    target_date: date,
-    *,
-    summaries_dir: Path | None = None,
-    config: Config | None = None,
-) -> Path:
-    resolved_config = _resolve_config(config)
-    output_dir = (summaries_dir or resolved_config.paths.summaries_dir).expanduser()
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    output_path = output_dir / "{}.md".format(target_date.isoformat())
-    output_path.write_text(summary_text, encoding="utf-8")
-    logger.info("Saved daily summary to %s", output_path)
-    return output_path
-
-
-def generate_daily_summary(
-    target_date: date | None = None,
-    *,
-    config: Config | None = None,
-) -> tuple[Path, SummaryStats]:
-    resolved_target = target_date or datetime.now().date()
-    note_files = read_daily_notes(resolved_target, config=config)
-    lines = extract_relevant_information(note_files)
-    stats = aggregate_note_data(note_files, lines)
-    summary_text = generate_summary_markdown(
-        resolved_target,
-        note_files=note_files,
-        lines=lines,
-        stats=stats,
-    )
-    output_path = save_daily_summary(summary_text, resolved_target, config=config)
-    return output_path, stats
+def create_summarizer(
+    config: Optional[Config] = None,
+    llm_backend: Optional[LLMBackend] = None,
+) -> Summarizer:
+    """Factory for Summarizer instances."""
+    return Summarizer(config=config, llm_backend=llm_backend)
 
 
 __all__ = [
     "SummarizerError",
-    "SummaryStats",
-    "parse_target_date",
-    "read_daily_notes",
-    "extract_relevant_information",
-    "aggregate_note_data",
-    "generate_summary_markdown",
-    "save_daily_summary",
-    "generate_daily_summary",
+    "LLMBackend",
+    "SummaryAnalysis",
+    "Summarizer",
+    "create_summarizer",
 ]
