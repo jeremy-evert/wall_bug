@@ -1,0 +1,2 @@
+# Wall_Bug currently has no third-party Python package dependencies.
+# This file is intentionally minimal.
