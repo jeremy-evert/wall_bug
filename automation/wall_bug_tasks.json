@@ -482,7 +482,7 @@
     "outputs": [
       "src/wallbug/commands/summarize_day.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-038",
