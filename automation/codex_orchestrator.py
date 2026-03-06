@@ -12,7 +12,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 TASK_FILE = "automation/wall_bug_tasks.json"
 
 MAX_WORKERS = 4
-MAX_RETRIES = 5
+MAX_RETRIES = 4
+MAX_MEMORY = 12
 
 build_memory = []
 memory_lock = threading.Lock()
@@ -211,7 +212,6 @@ def git_has_changes():
 def git_commit(task_id):
 
     if not git_has_changes():
-        print("No changes detected.")
         return
 
     subprocess.run(["git", "add", "."])
@@ -226,7 +226,7 @@ def git_commit(task_id):
 # prompt builder
 # --------------------------------------------------------
 
-def build_prompt(task, previous_error=None, last_diff=None):
+def build_prompt(task, previous_error=None, last_diff=None, pytest_output=None):
 
     repo_tree = build_repo_tree()
 
@@ -243,11 +243,17 @@ def build_prompt(task, previous_error=None, last_diff=None):
     retry_section = ""
 
     if previous_error:
-        retry_section = f"""
+        retry_section += f"""
 PREVIOUS FAILURE
 ----------------
 {previous_error}
-Fix the issue above.
+"""
+
+    if pytest_output:
+        retry_section += f"""
+PYTEST OUTPUT
+-------------
+{pytest_output}
 """
 
     diff_section = ""
@@ -340,7 +346,6 @@ def write_safe(path, content):
     content = strip_markdown(content)
 
     target = Path(path)
-
     resolved = target.resolve()
 
     if not str(resolved).startswith(str(REPO_ROOT)):
@@ -358,7 +363,6 @@ def write_safe(path, content):
             )
 
         target.parent.mkdir(parents=True, exist_ok=True)
-
         target.write_text(content + "\n")
 
 
@@ -397,10 +401,14 @@ def run_tests():
     env = os.environ.copy()
     env["PYTHONPATH"] = "src"
 
-    result = subprocess.run(["pytest"], env=env)
+    result = subprocess.run(
+        ["pytest"],
+        capture_output=True,
+        text=True,
+        env=env
+    )
 
-    if result.returncode not in (0, 5):
-        raise RuntimeError("Tests failed")
+    return result.returncode, result.stdout + result.stderr
 
 
 # --------------------------------------------------------
@@ -416,6 +424,7 @@ def execute_task(task):
 
     retries = 0
     previous_error = None
+    pytest_output = None
     previous_diff = None
 
     while retries < MAX_RETRIES:
@@ -424,7 +433,12 @@ def execute_task(task):
 
             before = repo_diff()
 
-            prompt = build_prompt(task, previous_error, before)
+            prompt = build_prompt(
+                task,
+                previous_error,
+                before,
+                pytest_output
+            )
 
             output = run_codex(prompt)
 
@@ -436,7 +450,10 @@ def execute_task(task):
                 print("🟡 No changes")
                 return True
 
-            run_tests()
+            code, test_output = run_tests()
+
+            if code not in (0, 5):
+                raise RuntimeError(test_output)
 
             git_commit(task["id"])
 
@@ -446,7 +463,7 @@ def execute_task(task):
                     f"{task['id']} : {task['description']}"
                 )
 
-                if len(build_memory) > 10:
+                if len(build_memory) > MAX_MEMORY:
                     build_memory.pop(0)
 
             print("✅ Task complete\n")
@@ -456,6 +473,8 @@ def execute_task(task):
         except Exception as e:
 
             previous_error = str(e)
+            pytest_output = previous_error
+
             current_diff = repo_diff()
 
             print("Codex error:", previous_error)

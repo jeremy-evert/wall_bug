@@ -1619,7 +1619,7 @@
     "outputs": [
       "/etc/systemd/system/myapp.service"
     ],
-    "status": "failed"
+    "status": "todo"
   },
   {
     "id": "WALLBUG-122",
@@ -1940,7 +1940,7 @@
     "outputs": [
       "src/wallbug/audio_retention_policy.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-145",
