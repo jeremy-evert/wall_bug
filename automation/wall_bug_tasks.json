@@ -1611,15 +1611,14 @@
   },
   {
     "id": "WALLBUG-121",
-    "description": "Add initial configuration for systemd service",
+    "description": "Add systemd service file for wallbug daemon",
     "files": [
-      "/etc/systemd/system/myapp.service"
+      "systemd/wallbug.service"
     ],
     "inputs": [],
     "outputs": [
-      "/etc/systemd/system/myapp.service"
-    ],
-    "status": "failed"
+      "systemd/wallbug.service"
+    ]
   },
   {
     "id": "WALLBUG-122",
