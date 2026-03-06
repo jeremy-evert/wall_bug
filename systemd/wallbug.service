@@ -5,21 +5,21 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-# Update these to match your installation.
 User=wallbug
 Group=wallbug
 WorkingDirectory=/opt/wall_bug
 
 Environment=PYTHONUNBUFFERED=1
-Environment=PYTHONPATH=/opt/wall_bug/src
-# Optional environment overrides (for example WALLBUG_* settings).
+Environment=PYTHONPATH=/opt/wall_bug
 EnvironmentFile=-/etc/default/wallbug
 
 ExecStart=/usr/bin/python3 -m wallbug.cli daemon --foreground
 Restart=on-failure
-RestartSec=5
-TimeoutStopSec=30
+RestartSec=5s
+TimeoutStopSec=30s
 KillSignal=SIGINT
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
