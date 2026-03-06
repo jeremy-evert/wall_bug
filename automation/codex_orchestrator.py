@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import re
 import threading
+import os
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -16,6 +17,8 @@ MAX_RETRIES = 5
 build_memory = []
 memory_lock = threading.Lock()
 task_file_lock = threading.Lock()
+
+REPO_ROOT = Path(".").resolve()
 
 
 # --------------------------------------------------------
@@ -126,35 +129,6 @@ def filter_duplicate_tasks(tasks):
         result.append(t)
 
     return result
-
-
-# --------------------------------------------------------
-# incremental build
-# --------------------------------------------------------
-
-def task_is_up_to_date(task):
-
-    inputs = task.get("inputs", [])
-    outputs = task.get("outputs", [])
-
-    if not outputs:
-        return False
-
-    for f in outputs:
-        if not Path(f).exists():
-            return False
-
-    existing_inputs = [
-        Path(f) for f in inputs if Path(f).exists()
-    ]
-
-    if not existing_inputs:
-        return False
-
-    newest_input = max(p.stat().st_mtime for p in existing_inputs)
-    oldest_output = min(Path(f).stat().st_mtime for f in outputs)
-
-    return oldest_output >= newest_input
 
 
 # --------------------------------------------------------
@@ -314,6 +288,8 @@ RULES
 -----
 Modify ONLY the allowed files.
 Never include markdown code fences.
+Never write files outside the repository root.
+Never attempt to modify system paths like /etc, /usr, /var.
 
 OUTPUT FORMAT
 -------------
@@ -363,9 +339,16 @@ def write_safe(path, content):
 
     content = strip_markdown(content)
 
+    target = Path(path)
+
+    resolved = target.resolve()
+
+    if not str(resolved).startswith(str(REPO_ROOT)):
+        raise RuntimeError(f"Attempted write outside repo: {path}")
+
     with tempfile.TemporaryDirectory() as tmp:
 
-        tmp_file = Path(tmp) / Path(path).name
+        tmp_file = Path(tmp) / target.name
         tmp_file.write_text(content)
 
         if path.endswith(".py"):
@@ -373,8 +356,6 @@ def write_safe(path, content):
                 ["python", "-m", "py_compile", str(tmp_file)],
                 check=True
             )
-
-        target = Path(path)
 
         target.parent.mkdir(parents=True, exist_ok=True)
 
@@ -413,10 +394,11 @@ def apply_changes(output):
 
 def run_tests():
 
-    result = subprocess.run(["pytest"])
+    env = os.environ.copy()
+    env["PYTHONPATH"] = "src"
 
-    # 0 = success
-    # 5 = no tests collected (acceptable during early builds)
+    result = subprocess.run(["pytest"], env=env)
+
     if result.returncode not in (0, 5):
         raise RuntimeError("Tests failed")
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import configparser
 import importlib.util
 import os
 import sys
@@ -46,6 +47,16 @@ Config, load_config = _load_config_symbols()
 
 _DEFAULT_RETENTION_DAYS = 30
 _DEFAULT_AUDIO_EXTENSIONS = (".wav", ".mp3", ".m4a", ".flac", ".ogg", ".aac", ".opus")
+_DEFAULT_AUDIO_DIR = Path.home() / ".wallbug" / "data" / "audio"
+
+_INI_SECTION = "audio_retention_policy"
+_INI_RECORDINGS_DIR_KEY = "recordings_dir"
+_INI_RETENTION_DAYS_KEY = "retention_days"
+
+_INI_PATH_ENV_VARS = (
+    "WALLBUG_AUDIO_RETENTION_CONFIG",
+    "WALLBUG_CONFIG_INI",
+)
 
 
 class AudioRetentionPolicyError(RuntimeError):
@@ -107,10 +118,41 @@ class AudioRetentionPolicy:
                 config = None
 
         self.config = config
-        self.dry_run = bool(dry_run)
+        self._ini_path = self._resolve_ini_path()
+        self._ini_config = self._load_ini_config(self._ini_path)
 
         self.audio_dir = self._resolve_audio_dir(audio_dir)
         self.retention_days = self._resolve_retention_days(retention_days)
+        self.dry_run = bool(dry_run)
+
+    def _resolve_ini_path(self) -> Optional[Path]:
+        candidates: list[Path] = []
+
+        for env_name in _INI_PATH_ENV_VARS:
+            value = os.getenv(env_name)
+            if value:
+                candidates.append(Path(value).expanduser())
+
+        candidates.append(Path.cwd() / "config.ini")
+
+        for candidate in candidates:
+            if candidate.exists() and candidate.is_file():
+                return candidate
+        return None
+
+    def _load_ini_config(self, ini_path: Optional[Path]) -> Optional[configparser.ConfigParser]:
+        if ini_path is None:
+            return None
+
+        parser = configparser.ConfigParser()
+        try:
+            loaded_files = parser.read(ini_path, encoding="utf-8")
+        except (configparser.Error, OSError):
+            return None
+
+        if not loaded_files:
+            return None
+        return parser
 
     def _resolve_audio_dir(self, audio_dir: Optional[str | Path]) -> Path:
         if audio_dir is not None:
@@ -122,7 +164,21 @@ class AudioRetentionPolicy:
             if cfg_audio_dir is not None:
                 return Path(cfg_audio_dir).expanduser()
 
-        return Path.home() / ".wallbug" / "data" / "audio"
+        env_audio_dir = os.getenv("WALLBUG_AUDIO_DIR") or os.getenv("AUDIO_DIR")
+        if env_audio_dir:
+            return Path(env_audio_dir).expanduser()
+
+        if self._ini_config is not None and self._ini_config.has_option(
+            _INI_SECTION, _INI_RECORDINGS_DIR_KEY
+        ):
+            raw_value = self._ini_config.get(_INI_SECTION, _INI_RECORDINGS_DIR_KEY).strip()
+            if raw_value:
+                parsed = Path(raw_value).expanduser()
+                if not parsed.is_absolute() and self._ini_path is not None:
+                    parsed = (self._ini_path.parent / parsed).expanduser()
+                return parsed
+
+        return _DEFAULT_AUDIO_DIR
 
     def _resolve_retention_days(self, retention_days: Optional[int]) -> int:
         if retention_days is not None:
@@ -136,6 +192,17 @@ class AudioRetentionPolicy:
             candidate = getattr(self.config, "audio_retention_days", None)
             if candidate is not None:
                 return _coerce_retention_days(candidate)
+
+            policy_cfg = getattr(self.config, "audio_retention_policy", None)
+            nested_candidate = getattr(policy_cfg, "retention_days", None)
+            if nested_candidate is not None:
+                return _coerce_retention_days(nested_candidate)
+
+        if self._ini_config is not None and self._ini_config.has_option(
+            _INI_SECTION, _INI_RETENTION_DAYS_KEY
+        ):
+            ini_value = self._ini_config.get(_INI_SECTION, _INI_RETENTION_DAYS_KEY)
+            return _coerce_retention_days(ini_value)
 
         return _DEFAULT_RETENTION_DAYS
 

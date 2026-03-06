@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Mapping, Optional
+from typing import Any, Optional
 
 
 logger = logging.getLogger("wallbug.metadata")
@@ -30,7 +31,20 @@ def _coerce_metadata(metadata: Optional[Mapping[str, Any]]) -> dict[str, Any]:
         )
         raise MetadataError("metadata must be a mapping or None.")
 
-    coerced = dict(metadata)
+    try:
+        coerced = dict(metadata)
+    except Exception as exc:
+        logger.error("Metadata coercion failed while converting mapping: %s", exc)
+        raise MetadataError("metadata could not be converted to a dictionary.") from exc
+
+    for key in coerced:
+        if not isinstance(key, str):
+            logger.error(
+                "Metadata coercion failed: metadata keys must be strings, got key type %s.",
+                type(key).__name__,
+            )
+            raise MetadataError("metadata keys must be strings.")
+
     logger.debug("Metadata coercion succeeded with %d override keys.", len(coerced))
     return coerced
 

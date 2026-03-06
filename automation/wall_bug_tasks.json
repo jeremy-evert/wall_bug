@@ -1006,7 +1006,7 @@
       "src/wallbug/metadata.py",
       "src/wallbug/tests/test_metadata.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-076",
@@ -1022,7 +1022,7 @@
       "src/wallbug/metadata.py",
       "src/wallbug/tests/test_metadata.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-077",
@@ -1053,7 +1053,7 @@
     "outputs": [
       "src/wallbug/tests/test_metadata.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-079",
@@ -1332,7 +1332,7 @@
     "outputs": [
       "tests/test_search_engine.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-100",
@@ -1346,7 +1346,7 @@
     "outputs": [
       "tests/test_directory_manager.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-101",
@@ -1717,7 +1717,7 @@
     "outputs": [
       "scripts/cleanup.sh"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-129",
@@ -1732,7 +1732,7 @@
     "outputs": [
       "scripts/cleanup.sh"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-130",
@@ -1925,7 +1925,7 @@
     "outputs": [
       "src/wallbug/audio_retention_policy.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-144",
@@ -1954,7 +1954,7 @@
     "outputs": [
       "src/wallbug/audio_retention_policy.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-146",
@@ -1968,7 +1968,7 @@
     "outputs": [
       "src/wallbug/audio_retention_policy.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-147",
@@ -1982,7 +1982,7 @@
     "outputs": [
       "src/wallbug/audio_retention_policy.py"
     ],
-    "status": "todo"
+    "status": "duplicate"
   },
   {
     "id": "WALLBUG-148",
@@ -1994,6 +1994,6 @@
     "outputs": [
       "tests/test_audio_retention_policy.py"
     ],
-    "status": "todo"
+    "status": "done"
   }
 ]
