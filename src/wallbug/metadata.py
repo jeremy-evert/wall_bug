@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Mapping, Optional
+
+
+logger = logging.getLogger("wallbug.metadata")
 
 
 class MetadataError(ValueError):
@@ -17,21 +21,36 @@ def _utc_now_iso() -> str:
 
 def _coerce_metadata(metadata: Optional[Mapping[str, Any]]) -> dict[str, Any]:
     if metadata is None:
+        logger.debug("No user metadata provided.")
         return {}
     if not isinstance(metadata, Mapping):
+        logger.error(
+            "Metadata coercion failed: expected mapping or None, got %s.",
+            type(metadata).__name__,
+        )
         raise MetadataError("metadata must be a mapping or None.")
-    return dict(metadata)
+
+    coerced = dict(metadata)
+    logger.debug("Metadata coercion succeeded with %d override keys.", len(coerced))
+    return coerced
 
 
 def _transcript_stats(transcript: str) -> dict[str, int]:
     stripped = transcript.strip()
     words = stripped.split() if stripped else []
     lines = transcript.splitlines() if transcript else []
-    return {
+    stats = {
         "char_count": len(transcript),
         "word_count": len(words),
         "line_count": len(lines),
     }
+    logger.debug(
+        "Transcript stats computed (chars=%d, words=%d, lines=%d).",
+        stats["char_count"],
+        stats["word_count"],
+        stats["line_count"],
+    )
+    return stats
 
 
 @dataclass(frozen=True)
@@ -61,7 +80,12 @@ def attach_metadata(
     - transcript: original transcript text
     - metadata: merged metadata dictionary
     """
+    logger.debug("Starting metadata attachment.")
     if not isinstance(transcript, str):
+        logger.error(
+            "Metadata attachment failed: transcript must be a string, got %s.",
+            type(transcript).__name__,
+        )
         raise MetadataError("transcript must be a string.")
 
     computed = TranscriptMetadata(**_transcript_stats(transcript)).to_dict()
@@ -69,6 +93,13 @@ def attach_metadata(
 
     merged_metadata = dict(computed)
     merged_metadata.update(provided)
+
+    logger.info(
+        "Metadata attachment complete (computed_keys=%d, override_keys=%d, merged_keys=%d).",
+        len(computed),
+        len(provided),
+        len(merged_metadata),
+    )
 
     return {
         "transcript": transcript,

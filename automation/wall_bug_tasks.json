@@ -782,7 +782,7 @@
       "src/wallbug/audio_processor.py",
       "src/wallbug/transcriber.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-060",
