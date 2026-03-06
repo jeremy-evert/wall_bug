@@ -1,0 +1,12 @@
+{
+  "beam_size": 5,
+  "char_count": 198,
+  "created_at": "2026-03-06T13:42:17.123456+00:00",
+  "device": "cpu",
+  "language": "en",
+  "line_count": 4,
+  "model": "base",
+  "source": "/home/user/.wallbug/data/audio/recording_20260306T134100000000Z.wav",
+  "transcriber": "whisper-cli",
+  "word_count": 34
+}

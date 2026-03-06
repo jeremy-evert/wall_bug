@@ -979,7 +979,7 @@
     "outputs": [
       "src/wallbug/data/sample_transcript.txt"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-074",
