@@ -1746,7 +1746,7 @@
     "outputs": [
       "scripts/cleanup.sh"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-131",
