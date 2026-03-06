@@ -1091,7 +1091,7 @@
     "outputs": [
       "src/wallbug/summarizer.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-082",
