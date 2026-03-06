@@ -456,7 +456,7 @@
     "outputs": [
       "src/wallbug/commands/transcribe.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-036",

@@ -281,6 +281,7 @@ class Configuration:
         # Legacy names and shorthand aliases.
         env_aliases: dict[str, str] = {
             "DEBUG": "debug",
+            "HOME_DIR": "paths.base_dir",
             "BASE_DIR": "paths.base_dir",
             "DATA_DIR": "paths.data_dir",
             "AUDIO_DIR": "paths.audio_dir",
@@ -310,6 +311,7 @@ class Configuration:
             "LLM_MAX_TOKENS": "llm.max_tokens",
             "LOG_LEVEL": "logging.level",
             "LOG_FORMAT": "logging.fmt",
+            "LOG_FMT": "logging.fmt",
             "FFMPEG_PATH": "tools.ffmpeg_path",
             "WHISPER_CPP_PATH": "tools.whisper_cpp_path",
         }
