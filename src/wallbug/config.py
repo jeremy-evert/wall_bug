@@ -65,6 +65,20 @@ def _caster_for_default(value: Any) -> Any:
     return str
 
 
+def _candidate_env_suffixes(path: str) -> list[str]:
+    upper_path = path.upper()
+    candidates = [
+        upper_path.replace(".", "_"),
+        upper_path.replace(".", "__"),
+    ]
+
+    deduped: list[str] = []
+    for candidate in candidates:
+        if candidate not in deduped:
+            deduped.append(candidate)
+    return deduped
+
+
 @dataclass
 class PathsConfig:
     base_dir: Path = field(default_factory=lambda: Path.home() / ".wallbug")
@@ -302,42 +316,61 @@ class Config:
             "WHISPER_CPP_PATH": "tools.whisper_cpp_path",
         }
 
-        top_sections = {"paths", "recorder", "transcription", "llm", "logging", "tools"}
         casters = {path: _caster_for_default(value) for path, value in _iter_leaf_paths(data)}
+        candidate_to_path: dict[str, str] = {}
+        for path in casters:
+            for suffix in _candidate_env_suffixes(path):
+                candidate_to_path.setdefault(suffix, path)
 
+        top_sections = {"paths", "recorder", "transcription", "llm", "logging", "tools"}
+
+        def apply_override(path: str, raw_value: str) -> None:
+            caster = casters.get(path)
+            if caster is None:
+                return
+            try:
+                coerced = caster(raw_value)
+            except (TypeError, ValueError):
+                return
+            _set_nested_value(data, path, coerced)
+
+        # Apply canonical and structured env vars first.
         for env_name, raw_value in os.environ.items():
             if not env_name.startswith(ENV_PREFIX):
                 continue
 
             suffix = env_name[len(ENV_PREFIX) :]
-            path = env_aliases.get(suffix)
+            normalized_suffix = suffix.upper()
 
-            if path is None and "_" in suffix:
-                section, remainder = suffix.split("_", 1)
+            if normalized_suffix in env_aliases:
+                continue
+
+            path = candidate_to_path.get(normalized_suffix)
+
+            if path is None and "__" in normalized_suffix:
+                candidate = normalized_suffix.lower().replace("__", ".")
+                if candidate in casters:
+                    path = candidate
+
+            if path is None and "_" in normalized_suffix:
+                section, remainder = normalized_suffix.split("_", 1)
                 section = section.lower()
                 if section in top_sections:
                     candidate = f"{section}.{remainder.lower()}"
                     if candidate in casters:
                         path = candidate
 
-            if path is None and "__" in suffix:
-                candidate = suffix.lower().replace("__", ".")
-                if candidate in casters:
-                    path = candidate
-
             if path is None:
                 continue
 
-            caster = casters.get(path)
-            if caster is None:
-                continue
+            apply_override(path, raw_value)
 
-            try:
-                coerced = caster(raw_value)
-            except (TypeError, ValueError):
+        # Legacy aliases applied last so they retain backward-compatible precedence.
+        for suffix, path in env_aliases.items():
+            raw_value = os.getenv(f"{ENV_PREFIX}{suffix}")
+            if raw_value is None:
                 continue
-
-            _set_nested_value(data, path, coerced)
+            apply_override(path, raw_value)
 
         return Config.from_dict(data)
 

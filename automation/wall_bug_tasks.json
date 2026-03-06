@@ -47,7 +47,7 @@
     "outputs": [
       "src/wallbug/logging.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-005",
