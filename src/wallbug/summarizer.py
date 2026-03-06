@@ -2,31 +2,19 @@
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
-import re
-from typing import Any, Optional
+from typing import Iterable, Sequence
 
-from wallbug.archive import ArchiveManager
 from wallbug.config import Config, load_config
+from wallbug.logging import get_logger
 
+logger = get_logger("wallbug.summarizer")
 
-class SummarizerError(RuntimeError):
-    """Raised when daily summary generation cannot be completed."""
-
-
-@dataclass(frozen=True)
-class NoteDocument:
-    """One source document used in daily summary generation."""
-
-    path: Path
-    source_type: str
-    text: str
-
-
-_STOPWORDS = {
+_STOP_WORDS = {
     "a",
     "an",
     "and",
@@ -34,262 +22,286 @@ _STOPWORDS = {
     "as",
     "at",
     "be",
-    "but",
     "by",
     "for",
     "from",
-    "has",
-    "have",
-    "i",
-    "if",
     "in",
     "is",
     "it",
-    "its",
     "of",
     "on",
     "or",
-    "our",
     "that",
     "the",
-    "their",
-    "there",
     "this",
     "to",
     "was",
-    "we",
     "were",
     "with",
+    "i",
+    "we",
     "you",
+    "they",
+    "he",
+    "she",
+    "them",
+    "our",
     "your",
+    "their",
 }
+
+
+class SummarizerError(RuntimeError):
+    """Raised when daily summary generation fails."""
+
+
+@dataclass(frozen=True)
+class SummaryStats:
+    note_files: int
+    non_empty_notes: int
+    extracted_lines: int
+    total_words: int
+
+    def to_dict(self) -> dict[str, int]:
+        return {
+            "note_files": self.note_files,
+            "non_empty_notes": self.non_empty_notes,
+            "extracted_lines": self.extracted_lines,
+            "total_words": self.total_words,
+        }
+
+
+def parse_target_date(raw_value: str | None) -> date:
+    if raw_value is None:
+        return datetime.now().date()
+    try:
+        return date.fromisoformat(raw_value)
+    except ValueError as exc:
+        raise SummarizerError(
+            "Invalid date {!r}. Expected format: YYYY-MM-DD.".format(raw_value)
+        ) from exc
+
+
+def _resolve_config(config: Config | None) -> Config:
+    return config or load_config()
 
 
 def _safe_read_text(path: Path) -> str:
     try:
-        return path.read_text(encoding="utf-8").strip()
+        return path.read_text(encoding="utf-8")
     except OSError:
+        logger.warning("Unable to read note file: %s", path)
         return ""
 
 
-def _iter_category_files(entry_dir: Path, category: str) -> list[Path]:
-    target = entry_dir / category
-    if not target.exists() or not target.is_dir():
-        return []
-    return [path for path in sorted(target.iterdir()) if path.is_file()]
-
-
-def _is_target_day_entry(manager: ArchiveManager, entry_dir: Path, target_date: date) -> bool:
-    expected = (
-        target_date.strftime("%Y"),
-        target_date.strftime("%m"),
-        target_date.strftime("%d"),
-    )
-
-    try:
-        rel = entry_dir.resolve().relative_to(manager.archive_root.resolve())
-    except (ValueError, OSError):
-        return False
-
-    return len(rel.parts) >= 4 and tuple(rel.parts[:3]) == expected
-
-
-def _line_candidate(text: str, max_len: int = 160) -> str:
-    for line in text.splitlines():
-        cleaned = " ".join(line.strip().split())
-        if cleaned:
-            if len(cleaned) > max_len:
-                return cleaned[: max_len - 3].rstrip() + "..."
-            return cleaned
-    return ""
-
-
-def _extract_keywords(chunks: list[str], limit: int = 8) -> list[str]:
-    counts: Counter[str] = Counter()
-    for chunk in chunks:
-        for token in re.findall(r"[A-Za-z][A-Za-z'\-]{2,}", chunk.lower()):
-            if token in _STOPWORDS:
-                continue
-            counts[token] += 1
-    return [word for word, _ in counts.most_common(limit)]
-
-
-def _build_narrative(keywords: list[str], words: int, files: int) -> str:
-    if not keywords:
-        return (
-            "The day's notes contain limited repeated language, but they were aggregated "
-            "into a single summary for review."
-        )
-    if len(keywords) == 1:
-        topic_text = keywords[0]
-    elif len(keywords) == 2:
-        topic_text = "{} and {}".format(keywords[0], keywords[1])
-    else:
-        topic_text = ", ".join(keywords[:-1]) + ", and " + keywords[-1]
-
+def _date_file_globs(target_date: date) -> tuple[str, str]:
     return (
-        "Reviewing {} words across {} files, the strongest recurring themes were {}."
-    ).format(words, files, topic_text)
-
-
-def collect_day_documents(
-    target_date: date,
-    archive_manager: Optional[ArchiveManager] = None,
-    include_transcripts: bool = True,
-) -> tuple[list[NoteDocument], int]:
-    """Collect note-like documents for a single day.
-
-    Returns:
-    - list of documents with path/source_type/content
-    - number of archive entries processed for the day
-    """
-    manager = archive_manager or ArchiveManager(config=load_config())
-    entries = [
-        entry_dir
-        for entry_dir in manager.list_entries()
-        if _is_target_day_entry(manager, entry_dir, target_date)
-    ]
-
-    documents: list[NoteDocument] = []
-    for entry_dir in sorted(entries, reverse=True):
-        for path in _iter_category_files(entry_dir, "notes"):
-            text = _safe_read_text(path)
-            if text:
-                documents.append(NoteDocument(path=path, source_type="note", text=text))
-        if include_transcripts:
-            for path in _iter_category_files(entry_dir, "transcripts"):
-                text = _safe_read_text(path)
-                if text:
-                    documents.append(NoteDocument(path=path, source_type="transcript", text=text))
-
-    return documents, len(entries)
-
-
-def build_daily_summary(
-    target_date: date,
-    archive_manager: Optional[ArchiveManager] = None,
-    include_transcripts: bool = True,
-) -> tuple[str, dict[str, int]]:
-    """Analyze all day documents and generate a daily summary markdown string."""
-    documents, entry_count = collect_day_documents(
-        target_date=target_date,
-        archive_manager=archive_manager,
-        include_transcripts=include_transcripts,
+        "{}*.md".format(target_date.isoformat()),
+        "{}*.md".format(target_date.strftime("%Y%m%d")),
     )
 
-    chunks = [doc.text for doc in documents]
-    note_files = sum(1 for doc in documents if doc.source_type == "note")
-    transcript_files = sum(1 for doc in documents if doc.source_type == "transcript")
-    file_count = len(documents)
-    word_count = sum(len(chunk.split()) for chunk in chunks)
-    char_count = sum(len(chunk) for chunk in chunks)
 
-    highlight_lines: list[str] = []
-    seen: set[str] = set()
-    for chunk in chunks:
-        if len(highlight_lines) >= 8:
-            break
-        candidate = _line_candidate(chunk)
-        if not candidate or candidate in seen:
+def _iter_note_files_for_day(notes_dir: Path, target_date: date) -> list[Path]:
+    if not notes_dir.exists() or not notes_dir.is_dir():
+        return []
+
+    candidates: dict[str, Path] = {}
+
+    for pattern in _date_file_globs(target_date):
+        for path in sorted(notes_dir.glob(pattern)):
+            if path.is_file():
+                candidates[str(path.resolve())] = path
+
+    for path in sorted(notes_dir.glob("*.md")):
+        if not path.is_file():
             continue
-        seen.add(candidate)
-        highlight_lines.append(candidate)
+        try:
+            modified_date = datetime.fromtimestamp(path.stat().st_mtime).date()
+        except OSError:
+            continue
+        if modified_date == target_date:
+            candidates[str(path.resolve())] = path
 
-    keywords = _extract_keywords(chunks, limit=8)
-    narrative = _build_narrative(keywords=keywords[:5], words=word_count, files=file_count)
+    return sorted(candidates.values())
 
-    lines: list[str] = [
+
+def read_daily_notes(
+    target_date: date,
+    *,
+    notes_dir: Path | None = None,
+    config: Config | None = None,
+) -> list[Path]:
+    resolved_config = _resolve_config(config)
+    resolved_notes_dir = (notes_dir or resolved_config.paths.notes_dir).expanduser()
+    note_files = _iter_note_files_for_day(resolved_notes_dir, target_date)
+    logger.info(
+        "Found %d note file(s) for %s in %s",
+        len(note_files),
+        target_date.isoformat(),
+        resolved_notes_dir,
+    )
+    return note_files
+
+
+def _clean_line(value: str) -> str:
+    line = value.strip()
+    if not line:
+        return ""
+    line = re.sub(r"^\s*[-*+]\s+", "", line)
+    line = re.sub(r"^\s*#+\s*", "", line)
+    line = re.sub(r"\s+", " ", line).strip()
+    return line
+
+
+def extract_relevant_information(note_files: Sequence[Path]) -> list[str]:
+    extracted: list[str] = []
+    for path in note_files:
+        raw = _safe_read_text(path)
+        if not raw.strip():
+            continue
+        for line in raw.splitlines():
+            candidate = _clean_line(line)
+            if candidate:
+                extracted.append(candidate)
+    return extracted
+
+
+def _top_terms(lines: Iterable[str], *, limit: int = 8) -> list[tuple[str, int]]:
+    counter: Counter[str] = Counter()
+    for line in lines:
+        for token in re.findall(r"[A-Za-z0-9']+", line.lower()):
+            if len(token) < 3:
+                continue
+            if token in _STOP_WORDS:
+                continue
+            counter[token] += 1
+    return counter.most_common(limit)
+
+
+def aggregate_note_data(note_files: Sequence[Path], lines: Sequence[str]) -> SummaryStats:
+    non_empty_notes = 0
+    total_words = 0
+    for path in note_files:
+        text = _safe_read_text(path).strip()
+        if text:
+            non_empty_notes += 1
+            total_words += len(text.split())
+
+    return SummaryStats(
+        note_files=len(note_files),
+        non_empty_notes=non_empty_notes,
+        extracted_lines=len(lines),
+        total_words=total_words,
+    )
+
+
+def generate_summary_markdown(
+    target_date: date,
+    *,
+    note_files: Sequence[Path],
+    lines: Sequence[str],
+    stats: SummaryStats,
+) -> str:
+    unique_lines: list[str] = []
+    seen: set[str] = set()
+    for line in lines:
+        if line in seen:
+            continue
+        seen.add(line)
+        unique_lines.append(line)
+    highlights = unique_lines[:10]
+    top_terms = _top_terms(unique_lines, limit=8)
+
+    content: list[str] = [
         "# Daily Summary - {}".format(target_date.isoformat()),
         "",
-        "## Snapshot",
-        "- Entries processed: {}".format(entry_count),
-        "- Files analyzed: {}".format(file_count),
-        "- Notes analyzed: {}".format(note_files),
-        "- Transcripts analyzed: {}".format(transcript_files),
-        "- Total words: {}".format(word_count),
-        "- Total characters: {}".format(char_count),
+        "## Overview",
+        "- Note files found: {}".format(stats.note_files),
+        "- Non-empty notes: {}".format(stats.non_empty_notes),
+        "- Extracted lines: {}".format(stats.extracted_lines),
+        "- Total words analyzed: {}".format(stats.total_words),
         "",
     ]
 
-    if not documents:
-        lines.extend(
+    if not note_files:
+        content.extend(
             [
                 "## Summary",
-                "No notes or transcripts were found for this date.",
+                "No note files were found for this day.",
                 "",
             ]
         )
-    else:
-        lines.extend(
+        return "\n".join(content).rstrip() + "\n"
+
+    if not highlights:
+        content.extend(
             [
                 "## Summary",
-                narrative,
+                "Notes were found, but no readable content could be extracted.",
                 "",
-                "## Highlights",
             ]
         )
-        if highlight_lines:
-            for item in highlight_lines:
-                lines.append("- {}".format(item))
-        else:
-            lines.append("- Content exists but no highlight line could be extracted.")
-        lines.append("")
-        if keywords:
-            lines.append("## Keywords")
-            lines.append("- " + ", ".join(keywords))
-            lines.append("")
+        return "\n".join(content).rstrip() + "\n"
 
-    summary_text = "\n".join(lines).rstrip() + "\n"
-    stats = {
-        "entries": entry_count,
-        "files": file_count,
-        "note_files": note_files,
-        "transcript_files": transcript_files,
-        "words": word_count,
-        "characters": char_count,
-    }
-    return summary_text, stats
+    content.extend(["## Highlights"])
+    for line in highlights:
+        rendered = line if len(line) <= 180 else line[:177].rstrip() + "..."
+        content.append("- {}".format(rendered))
+    content.append("")
+
+    if top_terms:
+        content.extend(["## Frequent Terms"])
+        for term, count in top_terms:
+            content.append("- `{}` ({})".format(term, count))
+        content.append("")
+
+    return "\n".join(content).rstrip() + "\n"
 
 
-def write_daily_summary(
-    target_date: date,
+def save_daily_summary(
     summary_text: str,
-    config: Optional[Config] = None,
-    filename: Optional[str] = None,
+    target_date: date,
+    *,
+    summaries_dir: Path | None = None,
+    config: Config | None = None,
 ) -> Path:
-    """Write a generated daily summary into configured summaries directory."""
-    cfg = config or load_config()
-    summaries_dir = Path(cfg.paths.summaries_dir).expanduser()
-    summaries_dir.mkdir(parents=True, exist_ok=True)
+    resolved_config = _resolve_config(config)
+    output_dir = (summaries_dir or resolved_config.paths.summaries_dir).expanduser()
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_name = filename or "{}.md".format(target_date.isoformat())
-    output_path = summaries_dir / output_name
+    output_path = output_dir / "{}.md".format(target_date.isoformat())
     output_path.write_text(summary_text, encoding="utf-8")
+    logger.info("Saved daily summary to %s", output_path)
     return output_path
 
 
-def summarize_day(
-    target_date: Optional[date] = None,
-    archive_manager: Optional[ArchiveManager] = None,
-    config: Optional[Config] = None,
-    include_transcripts: bool = True,
-) -> tuple[Path, dict[str, int]]:
-    """Generate and persist a daily summary for one day."""
-    day = target_date or datetime.now().date()
-    summary_text, stats = build_daily_summary(
-        target_date=day,
-        archive_manager=archive_manager,
-        include_transcripts=include_transcripts,
+def generate_daily_summary(
+    target_date: date | None = None,
+    *,
+    config: Config | None = None,
+) -> tuple[Path, SummaryStats]:
+    resolved_target = target_date or datetime.now().date()
+    note_files = read_daily_notes(resolved_target, config=config)
+    lines = extract_relevant_information(note_files)
+    stats = aggregate_note_data(note_files, lines)
+    summary_text = generate_summary_markdown(
+        resolved_target,
+        note_files=note_files,
+        lines=lines,
+        stats=stats,
     )
-    path = write_daily_summary(day, summary_text, config=config)
-    return path, stats
+    output_path = save_daily_summary(summary_text, resolved_target, config=config)
+    return output_path, stats
 
 
 __all__ = [
     "SummarizerError",
-    "NoteDocument",
-    "collect_day_documents",
-    "build_daily_summary",
-    "write_daily_summary",
-    "summarize_day",
+    "SummaryStats",
+    "parse_target_date",
+    "read_daily_notes",
+    "extract_relevant_information",
+    "aggregate_note_data",
+    "generate_summary_markdown",
+    "save_daily_summary",
+    "generate_daily_summary",
 ]
