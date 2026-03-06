@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import logging
 import subprocess
 import sys
 from pathlib import Path
@@ -19,14 +20,22 @@ if TYPE_CHECKING:
     from wallbug.config import Config
 
 
+_BOOTSTRAP_LOGGER = logging.getLogger(__name__)
+
+
 def _load_config_symbols() -> tuple[type[Any], Any]:
     try:
         from wallbug.config import Config as runtime_config_class, load_config as runtime_load_config
 
         return runtime_config_class, runtime_load_config
-    except Exception:
+    except Exception as primary_exc:
         legacy_module_name = "wallbug._transcriber_legacy_config"
         legacy_module_path = Path(__file__).resolve().with_name("config.py")
+        _BOOTSTRAP_LOGGER.warning(
+            "Failed to import wallbug.config, falling back to legacy config module at %s: %s",
+            legacy_module_path,
+            primary_exc,
+        )
 
         module = sys.modules.get(legacy_module_name)
         if module is None:
@@ -35,13 +44,36 @@ def _load_config_symbols() -> tuple[type[Any], Any]:
                 legacy_module_path,
             )
             if spec is None or spec.loader is None:
+                _BOOTSTRAP_LOGGER.error(
+                    "Unable to load config module from %s (missing import spec/loader).",
+                    legacy_module_path,
+                )
                 raise ImportError(f"Unable to load config module from {legacy_module_path}")
 
             module = importlib.util.module_from_spec(spec)
             sys.modules[legacy_module_name] = module
-            spec.loader.exec_module(module)
+            try:
+                spec.loader.exec_module(module)
+            except Exception as exc:
+                _BOOTSTRAP_LOGGER.error(
+                    "Failed to execute legacy config module %s: %s",
+                    legacy_module_path,
+                    exc,
+                )
+                raise ImportError(
+                    f"Unable to execute config module from {legacy_module_path}: {exc}"
+                ) from exc
 
-        return module.Config, module.load_config
+        try:
+            return module.Config, module.load_config
+        except AttributeError as exc:
+            _BOOTSTRAP_LOGGER.error(
+                "Legacy config module at %s does not expose Config/load_config.",
+                legacy_module_path,
+            )
+            raise ImportError(
+                f"Config module at {legacy_module_path} is missing Config/load_config"
+            ) from exc
 
 
 Config, load_config = _load_config_symbols()
@@ -59,10 +91,23 @@ class Transcriber:
         config: Optional[Config] = None,
         whisper_path: Optional[str] = None,
     ) -> None:
-        self.config = config or load_config()
-        self.whisper_path = whisper_path or self.config.tools.whisper_cpp_path
-        self.archive_manager = ArchiveManager(config=self.config)
         self.logger = get_logger(__name__)
+
+        try:
+            self.config = config or load_config()
+        except Exception as exc:
+            self.logger.error("Unable to load transcription configuration: %s", exc)
+            raise TranscriptionError("Unable to load transcription configuration: {}".format(exc)) from exc
+
+        self.whisper_path = whisper_path or self.config.tools.whisper_cpp_path
+        if not str(self.whisper_path).strip():
+            self.logger.warning("Configured transcriber executable path is empty.")
+
+        try:
+            self.archive_manager = ArchiveManager(config=self.config)
+        except Exception as exc:
+            self.logger.error("Unable to initialize archive manager: %s", exc)
+            raise TranscriptionError("Unable to initialize archive manager: {}".format(exc)) from exc
 
     def resolve_source(self, source: Optional[str | Path]) -> Path:
         if source is not None:
@@ -135,7 +180,12 @@ class Transcriber:
         beam_size: Optional[int] = None,
         include_metadata: bool = True,
     ) -> Path:
-        self.logger.info("Starting transcription run.")
+        self.logger.info(
+            "Starting transcription run (source=%s, output=%s, include_metadata=%s).",
+            source,
+            output_path,
+            include_metadata,
+        )
         try:
             src = self.resolve_source(source)
             target = self.build_output_path(src, output_path=output_path)
@@ -143,6 +193,11 @@ class Transcriber:
             try:
                 target.parent.mkdir(parents=True, exist_ok=True)
             except OSError as exc:
+                self.logger.error(
+                    "Unable to create transcript output directory %s: %s",
+                    target.parent,
+                    exc,
+                )
                 raise TranscriptionError(
                     "Unable to create transcript output directory {}: {}".format(target.parent, exc)
                 ) from exc
@@ -156,6 +211,7 @@ class Transcriber:
                 device=device,
                 beam_size=beam_size,
             )
+            self.logger.debug("Built transcriber command for source %s and target %s", src, target)
 
             result = self._run(command)
             if result.returncode != 0:
@@ -206,6 +262,11 @@ class Transcriber:
                         encoding="utf-8",
                     )
                 except (OSError, UnicodeError, TypeError, ValueError, KeyError) as exc:
+                    self.logger.error(
+                        "Unable to persist transcript metadata for %s: %s",
+                        target,
+                        exc,
+                    )
                     raise TranscriptionError(
                         "Unable to persist transcript metadata for {}: {}".format(target, exc)
                     ) from exc
@@ -213,6 +274,7 @@ class Transcriber:
                 try:
                     target.write_text(transcript_text, encoding="utf-8")
                 except (OSError, UnicodeError) as exc:
+                    self.logger.error("Unable to write transcript file %s: %s", target, exc)
                     raise TranscriptionError(
                         "Unable to write transcript file {}: {}".format(target, exc)
                     ) from exc
@@ -288,10 +350,12 @@ class Transcriber:
         try:
             resolved_beam_size = int(beam_value)
         except (TypeError, ValueError) as exc:
+            self.logger.error("Invalid beam size value: %s", beam_value)
             raise TranscriptionError("Invalid beam size value: {}".format(beam_value)) from exc
 
         executable = str(self.whisper_path).strip()
         if not executable:
+            self.logger.error("Transcriber executable path is empty.")
             raise TranscriptionError("Transcriber executable path is empty.")
 
         command = [
@@ -309,9 +373,18 @@ class Transcriber:
             command.extend(["-l", str(resolved_language)])
         if resolved_beam_size > 0:
             command.extend(["-bs", str(resolved_beam_size)])
-        if str(resolved_device).strip().lower() == "cpu":
+
+        resolved_device_text = "" if resolved_device is None else str(resolved_device).strip().lower()
+        if resolved_device_text == "cpu":
             command.append("-ng")
 
+        self.logger.debug(
+            "Transcriber options resolved (model=%s, language=%s, device=%s, beam_size=%s).",
+            resolved_model,
+            resolved_language,
+            resolved_device,
+            resolved_beam_size,
+        )
         return command
 
     def _resolve_generated_file(self, source: Path, target: Path, output_base: Path) -> Path:
@@ -378,6 +451,7 @@ def transcribe_command(args: argparse.Namespace) -> int:
     logger = get_logger(__name__)
     source = getattr(args, "source", None)
     output = getattr(args, "output", None)
+    logger.debug("Received transcription CLI args: source=%s output=%s", source, output)
     try:
         target = transcribe_once(source=source, output_path=output)
     except TranscriptionError as exc:

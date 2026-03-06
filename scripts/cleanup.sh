@@ -20,7 +20,7 @@ expand_path() {
       printf '%s\n' "$HOME"
       ;;
     "~/"*)
-      printf '%s/%s\n' "$HOME" "${raw_path#~/}"
+      printf '%s/%s\n' "$HOME" "${raw_path#"~/"}"
       ;;
     *)
       printf '%s\n' "$raw_path"
@@ -28,24 +28,96 @@ expand_path() {
   esac
 }
 
+trim_and_unquote() {
+  local value="$1"
+
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
+
+  if [[ "$value" == \"*\" && "$value" == *\" ]]; then
+    value="${value#\"}"
+    value="${value%\"}"
+  elif [[ "$value" == \'*\' && "$value" == *\' ]]; then
+    value="${value#\'}"
+    value="${value%\'}"
+  else
+    value="${value%%[[:space:]]#*}"
+    value="${value%"${value##*[![:space:]]}"}"
+  fi
+
+  printf '%s\n' "$value"
+}
+
+read_yaml_top_level_value() {
+  local key="$1"
+
+  awk -v key="$key" '
+    /^[[:space:]]*#/ { next }
+    $0 ~ "^" key ":[[:space:]]*" {
+      line = $0
+      sub("^" key ":[[:space:]]*", "", line)
+      print line
+      exit
+    }
+  ' "$CONFIG_FILE" 2>/dev/null || true
+}
+
+read_yaml_section_value() {
+  local section="$1"
+  local key="$2"
+
+  awk -v section="$section" -v key="$key" '
+    /^[[:space:]]*#/ { next }
+
+    $0 ~ "^[[:space:]]*" section ":[[:space:]]*$" {
+      in_section = 1
+      next
+    }
+
+    in_section && $0 ~ "^[^[:space:]]" {
+      in_section = 0
+    }
+
+    in_section && $0 ~ "^[[:space:]]+" key ":[[:space:]]*" {
+      line = $0
+      sub("^[[:space:]]+" key ":[[:space:]]*", "", line)
+      print line
+      exit
+    }
+  ' "$CONFIG_FILE" 2>/dev/null || true
+}
+
 configure_log_path() {
-  local configured=""
+  local configured_dir=""
+  local configured_file=""
+  local raw_value=""
 
-  if [[ -n "${WALLBUG_LOGS_DIR:-}" ]]; then
-    configured="$WALLBUG_LOGS_DIR"
+  if [[ -n "${WALLBUG_LOG_FILE:-}" ]]; then
+    configured_file="$WALLBUG_LOG_FILE"
+  elif [[ -n "${WALLBUG_LOGS_DIR:-}" ]]; then
+    configured_dir="$WALLBUG_LOGS_DIR"
   elif [[ -r "$CONFIG_FILE" ]]; then
-    configured="$(awk '/^[[:space:]]*logs_dir:[[:space:]]*/ {print $2; exit}' "$CONFIG_FILE" 2>/dev/null || true)"
-    configured="${configured#\"}"
-    configured="${configured%\"}"
-    configured="${configured#\'}"
-    configured="${configured%\'}"
+    raw_value="$(read_yaml_section_value "logging" "file")"
+    configured_file="$(trim_and_unquote "$raw_value")"
+
+    if [[ -z "$configured_file" ]]; then
+      raw_value="$(read_yaml_section_value "paths" "logs_dir")"
+      configured_dir="$(trim_and_unquote "$raw_value")"
+    fi
+
+    if [[ -z "$configured_dir" ]]; then
+      raw_value="$(read_yaml_top_level_value "logs_dir")"
+      configured_dir="$(trim_and_unquote "$raw_value")"
+    fi
   fi
 
-  if [[ -n "$configured" ]]; then
-    LOG_DIR="$(expand_path "$configured")"
+  if [[ -n "$configured_file" ]]; then
+    LOG_FILE="$(expand_path "$configured_file")"
+    LOG_DIR="$(dirname "$LOG_FILE")"
+  elif [[ -n "$configured_dir" ]]; then
+    LOG_DIR="$(expand_path "$configured_dir")"
+    LOG_FILE="$LOG_DIR/wallbug.log"
   fi
-
-  LOG_FILE="$LOG_DIR/wallbug.log"
 }
 
 write_log() {
@@ -90,6 +162,8 @@ error() {
 }
 
 init_logging() {
+  LOG_DIR="$(dirname "$LOG_FILE")"
+
   if ! mkdir -p "$LOG_DIR" 2>/dev/null; then
     LOG_FILE=""
     warn "Unable to create log directory: $LOG_DIR. Continuing without file logging."

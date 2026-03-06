@@ -102,8 +102,8 @@ def attach_metadata(
         )
         raise MetadataError("transcript must be a string.")
 
-    computed = TranscriptMetadata(**_transcript_stats(transcript)).to_dict()
     provided = _coerce_metadata(metadata)
+    computed = TranscriptMetadata(**_transcript_stats(transcript)).to_dict()
 
     merged_metadata = dict(computed)
     merged_metadata.update(provided)

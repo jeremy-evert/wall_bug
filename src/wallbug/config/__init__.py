@@ -7,6 +7,7 @@ implementation in ``wallbug/config.py`` while exposing a package interface.
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -17,15 +18,29 @@ _LEGACY_MODULE_PATH = Path(__file__).resolve().parent.parent / "config.py"
 
 
 def _load_legacy_module() -> ModuleType:
+    # If already loaded, reuse it
+    if _LEGACY_MODULE_NAME in sys.modules:
+        return sys.modules[_LEGACY_MODULE_NAME]
+
     spec = importlib.util.spec_from_file_location(
         _LEGACY_MODULE_NAME,
         _LEGACY_MODULE_PATH,
     )
+
     if spec is None or spec.loader is None:
-        raise ImportError(f"Unable to load legacy config module from {_LEGACY_MODULE_PATH}")
+        raise ImportError(
+            f"Unable to load legacy config module from {_LEGACY_MODULE_PATH}"
+        )
 
     module = importlib.util.module_from_spec(spec)
+
+    # CRITICAL FIX:
+    # register module before execution so decorators (dataclasses)
+    # can resolve module namespace correctly
+    sys.modules[_LEGACY_MODULE_NAME] = module
+
     spec.loader.exec_module(module)
+
     return module
 
 
@@ -58,7 +73,9 @@ def __getattr__(name: str) -> Any:
     try:
         return getattr(_legacy, name)
     except AttributeError as exc:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from exc
+        raise AttributeError(
+            f"module {__name__!r} has no attribute {name!r}"
+        ) from exc
 
 
 def __dir__() -> list[str]:

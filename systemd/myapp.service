@@ -1,0 +1,18 @@
+[Unit]
+Description=MyApp Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=wallbug
+Group=wallbug
+WorkingDirectory=/opt/wall_bug
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/opt/wall_bug/src
+ExecStart=/usr/bin/python3 -m wallbug.cli daemon --foreground
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import configparser
 import importlib.util
+import logging
 import os
 import sys
 from dataclasses import dataclass
@@ -16,15 +17,22 @@ if TYPE_CHECKING:
     from wallbug.config import Config
 
 
+_BOOTSTRAP_LOGGER = logging.getLogger(__name__)
+
+
 def _load_config_symbols() -> tuple[type[Any] | None, Any | None]:
     try:
         from wallbug.config import Config as runtime_config_class, load_config as runtime_load_config
 
         return runtime_config_class, runtime_load_config
-    except Exception:
+    except Exception as primary_exc:
         legacy_module_name = "wallbug._audio_retention_policy_legacy_config"
         legacy_module_path = Path(__file__).resolve().with_name("config.py")
         if not legacy_module_path.exists():
+            _BOOTSTRAP_LOGGER.warning(
+                "Failed to import wallbug.config and legacy config.py does not exist: %s",
+                primary_exc,
+            )
             return None, None
 
         module = sys.modules.get(legacy_module_name)
@@ -34,11 +42,23 @@ def _load_config_symbols() -> tuple[type[Any] | None, Any | None]:
                 legacy_module_path,
             )
             if spec is None or spec.loader is None:
+                _BOOTSTRAP_LOGGER.error(
+                    "Unable to load config module from %s (missing import spec/loader).",
+                    legacy_module_path,
+                )
                 return None, None
 
             module = importlib.util.module_from_spec(spec)
             sys.modules[legacy_module_name] = module
-            spec.loader.exec_module(module)
+            try:
+                spec.loader.exec_module(module)
+            except Exception as exc:
+                _BOOTSTRAP_LOGGER.error(
+                    "Failed to execute legacy config module %s: %s",
+                    legacy_module_path,
+                    exc,
+                )
+                return None, None
 
         return getattr(module, "Config", None), getattr(module, "load_config", None)
 
@@ -111,19 +131,28 @@ class AudioRetentionPolicy:
         audio_dir: Optional[str | Path] = None,
         dry_run: bool = False,
     ) -> None:
-        if config is None and callable(load_config):
-            try:
-                config = load_config()
-            except Exception:
-                config = None
-
-        self.config = config
+        self.config = self._initialize_config(config=config)
         self._ini_path = self._resolve_ini_path()
         self._ini_config = self._load_ini_config(self._ini_path)
 
         self.audio_dir = self._resolve_audio_dir(audio_dir)
         self.retention_days = self._resolve_retention_days(retention_days)
         self.dry_run = bool(dry_run)
+
+    def _initialize_config(self, config: Optional[Config]) -> Optional[Config]:
+        if config is not None:
+            return config
+        if not callable(load_config):
+            return None
+
+        try:
+            return load_config()
+        except Exception as exc:
+            _BOOTSTRAP_LOGGER.warning(
+                "Failed to load runtime config during audio retention initialization: %s",
+                exc,
+            )
+            return None
 
     def _resolve_ini_path(self) -> Optional[Path]:
         candidates: list[Path] = []
