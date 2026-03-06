@@ -1,0 +1,24 @@
+{
+  "directories": [
+    "src",
+    "src/brat",
+    "src/brat/artifacts",
+    "src/brat/tools",
+    "src/brat/steps",
+
+    "tests",
+    "tests/brat",
+    "tests/brat/run_manager",
+
+    "artifacts",
+    "scripts",
+    "automation",
+    "docs"
+  ],
+
+  "files": [
+    "src/brat/__init__.py",
+    "tests/__init__.py",
+    "tests/brat/__init__.py"
+  ]
+}

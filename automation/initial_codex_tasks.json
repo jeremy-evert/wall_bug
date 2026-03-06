@@ -1,0 +1,1450 @@
+[
+  {
+    "id": "BRAT-001",
+    "description": "Create a new directory for the expanded deliverables.",
+    "files": [
+      "docs/expanded_deliverables"
+    ]
+  },
+  {
+    "id": "BRAT-002",
+    "description": "Copy the original BRAT_Deliverables.md file to the expanded directory.",
+    "files": [
+      "docs/BRAT_Deliverables.md",
+      "docs/expanded_deliverables/BRAT_Deliverables.md"
+    ]
+  },
+  {
+    "id": "BRAT-003",
+    "description": "Update the file path in scripts/expand_deliverables.py to point to the new directory.",
+    "files": [
+      "scripts/expand_deliverables.py"
+    ]
+  },
+  {
+    "id": "BRAT-004",
+    "description": "Create a script to parse the original BRAT_Deliverables.md and generate a more detailed version.",
+    "files": [
+      "scripts/generate_expanded_deliverables.py"
+    ]
+  },
+  {
+    "id": "BRAT-005",
+    "description": "Add a README file in the expanded_deliverables directory explaining how to use the generated deliverables.",
+    "files": [
+      "docs/expanded_deliverables/README.md"
+    ]
+  },
+  {
+    "id": "BRAT-006",
+    "description": "Update documentation index to include the new expanded deliverables section.",
+    "files": [
+      "docs/index.md"
+    ]
+  },
+  {
+    "id": "BRAT-007",
+    "description": "Run the expand_deliverables script and review the output for accuracy.",
+    "files": []
+  },
+  {
+    "id": "BRAT-008",
+    "description": "Commit the changes to the version control system with a descriptive message.",
+    "files": []
+  },
+  {
+    "id": "BRAT-009",
+    "description": "Create the project structure with necessary directories and files.",
+    "files": [
+      "BRAT_Deliverables.md",
+      "README.md"
+    ]
+  },
+  {
+    "id": "BRAT-010",
+    "description": "Develop a basic user interface for file upload.",
+    "files": [
+      "frontend/src/components/FileUpload.js"
+    ]
+  },
+  {
+    "id": "BRAT-011",
+    "description": "Implement the backend server to handle file uploads.",
+    "files": [
+      "backend/src/server.py"
+    ]
+  },
+  {
+    "id": "BRAT-012",
+    "description": "Create a database schema to store uploaded files and their metadata.",
+    "files": [
+      "database/schema.sql"
+    ]
+  },
+  {
+    "id": "BRAT-013",
+    "description": "Develop a script to parse uploaded documents for key information.",
+    "files": [
+      "backend/src/parser.py"
+    ]
+  },
+  {
+    "id": "BRAT-014",
+    "description": "Implement an API endpoint to retrieve parsed data from the database.",
+    "files": [
+      "backend/src/routes/api.py"
+    ]
+  },
+  {
+    "id": "BRAT-015",
+    "description": "Create a user authentication system for accessing the application.",
+    "files": [
+      "backend/src/auth.py",
+      "frontend/src/components/Login.js"
+    ]
+  },
+  {
+    "id": "BRAT-016",
+    "description": "Develop a frontend component to display parsed data in a readable format.",
+    "files": [
+      "frontend/src/components/DisplayData.js"
+    ]
+  },
+  {
+    "id": "BRAT-017",
+    "description": "Test the entire system by uploading files and verifying data parsing and retrieval.",
+    "files": [
+      "tests/test_parser.py",
+      "tests/test_api.py"
+    ]
+  },
+  {
+    "id": "BRAT-018",
+    "description": "Create the main entry point for the command-line interface.",
+    "files": [
+      "brat_cli.py"
+    ]
+  },
+  {
+    "id": "BRAT-019",
+    "description": "Define functions to integrate and use local large language models (LLMs).",
+    "files": [
+      "modules/llm_module.py"
+    ]
+  },
+  {
+    "id": "BRAT-020",
+    "description": "Implement functions to handle file input/output operations.",
+    "files": [
+      "modules/file_processing.py"
+    ]
+  },
+  {
+    "id": "BRAT-021",
+    "description": "Create an example template for user inputs.",
+    "files": [
+      "templates/input_template.txt"
+    ]
+  },
+  {
+    "id": "BRAT-022",
+    "description": "Develop a template for formatted output produced by BRAT.",
+    "files": [
+      "templates/output_template.txt"
+    ]
+  },
+  {
+    "id": "BRAT-023",
+    "description": "Configure settings for the BRAT tool, including paths and parameters for LLMs and file handling.",
+    "files": [
+      "config/settings.ini"
+    ]
+  },
+  {
+    "id": "BRAT-024",
+    "description": "Implement error handling mechanisms for potential issues during file processing or LLM querying.",
+    "files": [
+      "modules/file_processing.py",
+      "brat_cli.py",
+      "modules/llm_module.py"
+    ]
+  },
+  {
+    "id": "BRAT-025",
+    "description": "Define the command-line interface interactions with users, including specific prompts or commands.",
+    "files": [
+      "brat_cli.py"
+    ]
+  },
+  {
+    "id": "BRAT-026",
+    "description": "Design a configuration management system to store and retrieve settings (e.g., `settings.ini`).",
+    "files": [
+      "config/settings.ini",
+      "modules/config_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-027",
+    "description": "Implement the main entry point for the CLI application.",
+    "files": [
+      "src/brat/main.py"
+    ]
+  },
+  {
+    "id": "BRAT-028",
+    "description": "Create a function to handle the 'run' command, triggering orchestration.",
+    "files": [
+      "src/brat/cli.py"
+    ]
+  },
+  {
+    "id": "BRAT-029",
+    "description": "Implement the 'resume' functionality within the CLI interface.",
+    "files": [
+      "src/brat/cli.py"
+    ]
+  },
+  {
+    "id": "BRAT-030",
+    "description": "Develop a function to handle the 'validate' command for artifact checks.",
+    "files": [
+      "src/brat/cli.py"
+    ]
+  },
+  {
+    "id": "BRAT-031",
+    "description": "Create a method in the CLI to perform diagnostic checks (\u2018doctor\u2019).",
+    "files": [
+      "src/brat/cli.py"
+    ]
+  },
+  {
+    "id": "BRAT-032",
+    "description": "Implement the 'version' command to display the tool's version.",
+    "files": [
+      "src/brat/cli.py"
+    ]
+  },
+  {
+    "id": "BRAT-033",
+    "description": "Design and implement data structures for storing configuration settings.",
+    "files": [
+      "src/brat/config.py"
+    ]
+  },
+  {
+    "id": "BRAT-034",
+    "description": "Create a system to store artifact files in the specified format.",
+    "files": [
+      "src/brat/artifact_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-035",
+    "description": "Develop a logging system for tracking execution and diagnosing issues.",
+    "files": [
+      "src/brat/logger.py"
+    ]
+  },
+  {
+    "id": "BRAT-036",
+    "description": "Implement state management to maintain operation status and progress.",
+    "files": [
+      "src/brat/state_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-037",
+    "description": "Define constants for artifact paths in `paths.py`.",
+    "files": [
+      "src/brat/paths.py"
+    ]
+  },
+  {
+    "id": "BRAT-038",
+    "description": "Implement the `generate_run_id` function to create unique run IDs.",
+    "files": [
+      "src/brat/run_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-039",
+    "description": "Create a utility function `get_run_path(run_id)` in `paths.py` to return the path for a given run ID.",
+    "files": [
+      "src/brat/paths.py"
+    ]
+  },
+  {
+    "id": "BRAT-040",
+    "description": "Implement the `create_run_directory(run_id)` function to create a directory for a new run.",
+    "files": [
+      "src/brat/run_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-041",
+    "description": "Define a data structure for metadata and implement the `manage_metadata(metadata, run_id)` function to save metadata in JSON format.",
+    "files": [
+      "src/brat/run_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-042",
+    "description": "Implement the `read_metadata(run_id)` function in `paths.py` to read metadata from the JSON file.",
+    "files": [
+      "src/brat/paths.py"
+    ]
+  },
+  {
+    "id": "BRAT-043",
+    "description": "Create a test for the `generate_run_id` function to ensure uniqueness and format correctness.",
+    "files": [
+      "tests/test_run_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-044",
+    "description": "Create a test for the `create_run_directory(run_id)` function to ensure directory creation is successful.",
+    "files": [
+      "tests/test_run_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-045",
+    "description": "Create a test for the `manage_metadata(metadata, run_id)` function to ensure metadata is saved correctly.",
+    "files": [
+      "tests/test_run_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-046",
+    "description": "Define the expected format of the `data` parameter.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-047",
+    "description": "Implement the Markdown writer function.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-048",
+    "description": "Implement the CSV writer function.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-049",
+    "description": "Implement the JSON writer function.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-050",
+    "description": "Implement file path validation logic.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-051",
+    "description": "Implement overwrite protection mechanism.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-052",
+    "description": "Define the criteria for artifact validation hooks.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-053",
+    "description": "Implement error handling during file writing.",
+    "files": [
+      "src/brat/artifacts/writer.py"
+    ]
+  },
+  {
+    "id": "BRAT-054",
+    "description": "Implement function to detect latest run in the Artifact Scanner.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-055",
+    "description": "Add function to check artifact presence based on file paths.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-056",
+    "description": "Develop method to calculate the resume step from stored state.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-057",
+    "description": "Create function to read the last known state from 'resume_state.json'.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-058",
+    "description": "Implement logic to write the current state to 'resume_state.json'.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-059",
+    "description": "Develop function to detect the current phase of artifact processing workflow.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-060",
+    "description": "Add method to read the current phase from 'current_phase.txt'.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-061",
+    "description": "Implement function to write the current phase to 'current_phase.txt'.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-062",
+    "description": "Create method to perform integrity checks on artifacts.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-063",
+    "description": "Add function to read artifact metadata from 'artifact_metadata.csv'.",
+    "files": [
+      "src/brat/artifacts/scanner.py"
+    ]
+  },
+  {
+    "id": "BRAT-064",
+    "description": "Create the main template file for capturing project details.",
+    "files": [
+      "templates/brain_dump_template.md"
+    ]
+  },
+  {
+    "id": "BRAT-065",
+    "description": "Develop a Python module to capture and store the project description.",
+    "files": [
+      "modules/project_description.py"
+    ]
+  },
+  {
+    "id": "BRAT-066",
+    "description": "Develop a Python module to capture and store the goals of the project.",
+    "files": [
+      "modules/goals.py"
+    ]
+  },
+  {
+    "id": "BRAT-067",
+    "description": "Develop a Python module to capture and store the constraints of the project.",
+    "files": [
+      "modules/constraints.py"
+    ]
+  },
+  {
+    "id": "BRAT-068",
+    "description": "Develop a Python module to capture and store assumptions made during project planning.",
+    "files": [
+      "modules/assumptions.py"
+    ]
+  },
+  {
+    "id": "BRAT-069",
+    "description": "Develop a Python module to capture and store potential failure risks identified.",
+    "files": [
+      "modules/failure_risks.py"
+    ]
+  },
+  {
+    "id": "BRAT-070",
+    "description": "Develop a Python module to capture and store any fun factors associated with the project.",
+    "files": [
+      "modules/fun_factors.py"
+    ]
+  },
+  {
+    "id": "BRAT-071",
+    "description": "Create a script or function to validate input captured in each module.",
+    "files": [
+      "utils/validator.py"
+    ]
+  },
+  {
+    "id": "BRAT-072",
+    "description": "Implement functionality to handle changes and updates to the template.",
+    "files": [
+      "utils/template_manager.py"
+    ]
+  },
+  {
+    "id": "BRAT-073",
+    "description": "Develop a feature to export the contents of the Brain Dump Template in another format (e.g., JSON, XML).",
+    "files": [
+      "utils/exporter.py"
+    ]
+  },
+  {
+    "id": "BRAT-074",
+    "description": "Read and parse the raw brainstorming content from `11_summary_structured.md`.",
+    "files": [
+      "src/brat/steps/summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-075",
+    "description": "Analyze the parsed content to extract key information and organize it into a structured dictionary.",
+    "files": [
+      "src/brat/steps/summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-076",
+    "description": "Define the structure of the output document, including headings, sections, and formatting rules.",
+    "files": [
+      "src/brat/steps/summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-077",
+    "description": "Format the structured data into a Markdown document following the defined structure.",
+    "files": [
+      "src/brat/steps/summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-078",
+    "description": "Write the formatted output to a new `.md` file specified by `output_path`.",
+    "files": [
+      "src/brat/steps/summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-079",
+    "description": "Implement error handling for file reading and writing operations.",
+    "files": [
+      "src/brat/steps/summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-080",
+    "description": "Test the `parse_input` function with sample input data to ensure it correctly parses the content.",
+    "files": [
+      "tests/test_summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-081",
+    "description": "Test the `analyze_content` function with various scenarios to ensure it accurately extracts and organizes information.",
+    "files": [
+      "tests/test_summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-082",
+    "description": "Test the `generate_output` function with sample structured data to ensure it produces correctly formatted Markdown output.",
+    "files": [
+      "tests/test_summary.py"
+    ]
+  },
+  {
+    "id": "BRAT-083",
+    "description": "Create a CSV file with predefined question templates.",
+    "files": [
+      "src/brat/steps/questions.py",
+      "12_clarifying_questions.csv"
+    ]
+  },
+  {
+    "id": "BRAT-084",
+    "description": "Define a data structure for storing user context.",
+    "files": [
+      "src/brat/steps/context_processor.py"
+    ]
+  },
+  {
+    "id": "BRAT-085",
+    "description": "Implement a function to parse the CSV file and load question templates into memory.",
+    "files": [
+      "src/brat/steps/questions.py"
+    ]
+  },
+  {
+    "id": "BRAT-086",
+    "description": "Write a function to process user context and identify areas needing clarification.",
+    "files": [
+      "src/brat/steps/context_processor.py"
+    ]
+  },
+  {
+    "id": "BRAT-087",
+    "description": "Create a mapping mechanism to select appropriate question templates based on the processed context.",
+    "files": [
+      "src/brat/steps/questions.py",
+      "src/brat/steps/context_processor.py"
+    ]
+  },
+  {
+    "id": "BRAT-088",
+    "description": "Develop a function to generate clarifying questions using the selected templates and processed context.",
+    "files": [
+      "src/brat/steps/questions.py"
+    ]
+  },
+  {
+    "id": "BRAT-089",
+    "description": "Implement logic to handle multiple clarifying questions, ensuring they are presented in an appropriate order.",
+    "files": [
+      "src/brat/steps/questions.py"
+    ]
+  },
+  {
+    "id": "BRAT-090",
+    "description": "Add error handling for cases where the CSV file is missing or incorrectly formatted.",
+    "files": [
+      "src/brat/steps/questions.py"
+    ]
+  },
+  {
+    "id": "BRAT-091",
+    "description": "Write unit tests to validate the functionality of the Clarifying Question Engine.",
+    "files": [
+      "tests/test_questions.py",
+      "tests/test_context_processor.py"
+    ]
+  },
+  {
+    "id": "BRAT-092",
+    "description": "Document the interface and usage of the Clarifying Question Engine for integration into other parts of the system.",
+    "files": [
+      "README.md"
+    ]
+  },
+  {
+    "id": "BRAT-093",
+    "description": "Read the `20_goals_initial.json` file.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-094",
+    "description": "Define a Python class to represent the structure of the input JSON.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-095",
+    "description": "Extract relevant data from the `20_goals_initial.json` file using the defined class.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-096",
+    "description": "Define a Python class to represent the transformed goals in a structured format.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-097",
+    "description": "Convert the extracted data into the structured format using the defined class.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-098",
+    "description": "Write a function to validate and normalize the transformed goals during the conversion process.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-099",
+    "description": "Handle any errors or exceptions that may occur during the reading, parsing, and transformation processes.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-100",
+    "description": "Write the transformed goals to `goals_transformed.json` file.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-101",
+    "description": "Implement a function to probe and validate the structure of `20_goals_initial.json`.",
+    "files": [
+      "src/brat/steps/goals_extract.py"
+    ]
+  },
+  {
+    "id": "BRAT-102",
+    "description": "Read and parse the task summary from a specified file.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-103",
+    "description": "Read and parse the refined goals from `21_goals_refined.json`.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-104",
+    "description": "Compare each goal in `21_goals_refined.json` with the task summary.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-105",
+    "description": "Identify any inconsistencies between goals and the task summary.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-106",
+    "description": "Generate a log entry for each inconsistency found.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-107",
+    "description": "Prompt the user to correct any identified inconsistencies or suggest alternative wording.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-108",
+    "description": "Write the log of inconsistencies and corrections to `22_goal_diff_log.md`.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-109",
+    "description": "Handle situations where a goal does not align with the task summary by rejecting the goal, prompting for correction, or suggesting alternative wording.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-110",
+    "description": "Ensure thread safety if the script is run concurrently with other components of the system.",
+    "files": [
+      "src/brat/steps/goals_refine.py"
+    ]
+  },
+  {
+    "id": "BRAT-111",
+    "description": "Read the input JSON file `30_goals_expanded.json` to parse the original set of goals.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-112",
+    "description": "Define a function to perform keyword substitution for goal expansion.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-113",
+    "description": "Implement a class or function to handle semantic analysis using local LLMs.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-114",
+    "description": "Develop a function to generate random variations of goals based on certain rules.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-115",
+    "description": "Create a function to format the expanded possibilities into a new JSON structure.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-116",
+    "description": "Write the expanded goals to a new JSON file named `expanded_goals.json`.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-117",
+    "description": "Add error handling for exceptions or errors during the expansion process.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-118",
+    "description": "Implement a limit to the number of expanded goals per original goal if specified.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-119",
+    "description": "Track and log any changes made during the expansion process.",
+    "files": [
+      "src/brat/steps/goals_expand.py"
+    ]
+  },
+  {
+    "id": "BRAT-120",
+    "description": "Read candidate goals from '40_goals_candidate.csv'",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-121",
+    "description": "Define simplification rules",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-122",
+    "description": "Implement function to apply simplification rules",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-123",
+    "description": "Test the simplification functions with sample data",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-124",
+    "description": "Define the structure for storing goal data during processing",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-125",
+    "description": "Implement function to write approved goals to '41_goals_approved.csv'",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-126",
+    "description": "Test the writing of approved goals to ensure correct format",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-127",
+    "description": "Implement error handling for goal simplification",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-128",
+    "description": "Add logging and monitoring for performance tracking",
+    "files": [
+      "src/brat/steps/goals_simplify.py"
+    ]
+  },
+  {
+    "id": "BRAT-129",
+    "description": "Read the raw tasks from the `50_tasks_raw.csv` file.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-130",
+    "description": "Parse the CSV file and extract individual tasks.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-131",
+    "description": "Identify dependencies between tasks from the parsed data.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-132",
+    "description": "Assign priorities to tasks based on their complexity or urgency.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-133",
+    "description": "Categorize tasks into different groups (e.g., by priority level).",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-134",
+    "description": "Decompose high-level tasks into smaller, actionable sub-tasks.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-135",
+    "description": "Create a JSON representation of the decomposed tasks.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-136",
+    "description": "Write the task list to `task_list.json` file.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-137",
+    "description": "Log the steps taken during the task decomposition process.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-138",
+    "description": "Handle errors during task decomposition and log them.",
+    "files": [
+      "src/brat/steps/decompose.py"
+    ]
+  },
+  {
+    "id": "BRAT-139",
+    "description": "Read task data from the CSV file.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-140",
+    "description": "Define a class to represent a task with attributes like ID, dependencies, size, and validation status.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-141",
+    "description": "Parse the CSV file to create a list of Task objects.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-142",
+    "description": "Implement a function to check if a task is oversized based on a predefined size threshold or criteria.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-143",
+    "description": "Implement a function to detect missing dependencies for each task.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-144",
+    "description": "Create a function to identify duplicate work among tasks.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-145",
+    "description": "Implement a validation check for the presence of necessary validation tasks.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-146",
+    "description": "Generate warning messages based on the identified issues (oversized tasks, missing dependencies, duplicate work, missing validation tasks).",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-147",
+    "description": "Write the detected warnings to an output Markdown file.",
+    "files": [
+      "src/brat/steps/review_tasks.py"
+    ]
+  },
+  {
+    "id": "BRAT-148",
+    "description": "Implement the function to calculate difficulty scores from input artifacts.",
+    "files": [
+      "src/brat/scoring/difficulty.py"
+    ]
+  },
+  {
+    "id": "BRAT-149",
+    "description": "Read and parse input artifact data for difficulty scoring.",
+    "files": [
+      "src/brat/scoring/difficulty.py"
+    ]
+  },
+  {
+    "id": "BRAT-150",
+    "description": "Write calculated difficulty scores to `60_scores_difficulty.csv`.",
+    "files": [
+      "src/brat/scoring/difficulty.py"
+    ]
+  },
+  {
+    "id": "BRAT-151",
+    "description": "Implement the function to calculate value scores from input artifacts.",
+    "files": [
+      "src/brat/scoring/value.py"
+    ]
+  },
+  {
+    "id": "BRAT-152",
+    "description": "Read and parse input artifact data for value scoring.",
+    "files": [
+      "src/brat/scoring/value.py"
+    ]
+  },
+  {
+    "id": "BRAT-153",
+    "description": "Write calculated value scores to `61_scores_value.csv`.",
+    "files": [
+      "src/brat/scoring/value.py"
+    ]
+  },
+  {
+    "id": "BRAT-154",
+    "description": "Implement the function to calculate dependency scores from input artifacts.",
+    "files": [
+      "src/brat/scoring/dependency.py"
+    ]
+  },
+  {
+    "id": "BRAT-155",
+    "description": "Read and parse input artifact data for dependency scoring.",
+    "files": [
+      "src/brat/scoring/dependency.py"
+    ]
+  },
+  {
+    "id": "BRAT-156",
+    "description": "Write calculated dependency scores to `62_scores_dependency.csv`.",
+    "files": [
+      "src/brat/scoring/dependency.py"
+    ]
+  },
+  {
+    "id": "BRAT-157",
+    "description": "Implement the function to calculate risk scores from input artifacts.",
+    "files": [
+      "src/brat/scoring/risk.py"
+    ]
+  },
+  {
+    "id": "BRAT-158",
+    "description": "Read configuration settings from scoring_config.yaml",
+    "files": [
+      "config/scoring_config.yaml"
+    ]
+  },
+  {
+    "id": "BRAT-159",
+    "description": "Implement scorer module for dimension A",
+    "files": [
+      "src/brat/scoring/score_dimension_a.py"
+    ]
+  },
+  {
+    "id": "BRAT-160",
+    "description": "Implement scorer module for dimension B",
+    "files": [
+      "src/brat/scoring/score_dimension_b.py"
+    ]
+  },
+  {
+    "id": "BRAT-161",
+    "description": "Combine scores from scorer modules in ranker.py",
+    "files": [
+      "src/brat/scoring/ranker.py"
+    ]
+  },
+  {
+    "id": "BRAT-162",
+    "description": "Write ranked backlog to 70_ranked_backlog.csv",
+    "files": [
+      "src/brat/scoring/ranker.py"
+    ]
+  },
+  {
+    "id": "BRAT-163",
+    "description": "Parse input backlog data from backlog_data.json",
+    "files": [
+      "src/brat/scoring/ranker.py"
+    ]
+  },
+  {
+    "id": "BRAT-164",
+    "description": "Define function to calculate priority based on scores and configuration",
+    "files": [
+      "src/brat/scoring/ranker.py"
+    ]
+  },
+  {
+    "id": "BRAT-165",
+    "description": "Add error handling for missing or invalid input data",
+    "files": [
+      "src/brat/scoring/ranker.py"
+    ]
+  },
+  {
+    "id": "BRAT-166",
+    "description": "Write unit tests for each scorer module and ranker functionality",
+    "files": [
+      "tests/test_score_dimension_a.py",
+      "tests/test_score_dimension_b.py",
+      "tests/test_ranker.py"
+    ]
+  },
+  {
+    "id": "BRAT-167",
+    "description": "Document the scoring process, inputs, outputs, and configuration options",
+    "files": [
+      "docs/scoring_engine.md"
+    ]
+  },
+  {
+    "id": "BRAT-168",
+    "description": "Read and parse the existing feasibility report template.",
+    "files": [
+      "71_feasibility_report.md"
+    ]
+  },
+  {
+    "id": "BRAT-169",
+    "description": "Define data structures for tasks, dependencies, and risk clusters.",
+    "files": [
+      "src/brat/analysis/data_structures.py"
+    ]
+  },
+  {
+    "id": "BRAT-170",
+    "description": "Implement a function to analyze task dependencies.",
+    "files": [
+      "src/brat/analysis/feasibility.py"
+    ]
+  },
+  {
+    "id": "BRAT-171",
+    "description": "Create a class to represent the dependency graph.",
+    "files": [
+      "src/brat/analysis/dependency_graph.py"
+    ]
+  },
+  {
+    "id": "BRAT-172",
+    "description": "Implement a function to detect dependency traps.",
+    "files": [
+      "src/brat/analysis/feasibility.py"
+    ]
+  },
+  {
+    "id": "BRAT-173",
+    "description": "Implement a function to group tasks into risk clusters.",
+    "files": [
+      "src/brat/analysis/feasibility.py"
+    ]
+  },
+  {
+    "id": "BRAT-174",
+    "description": "Develop an algorithm to estimate the difficulty of each task.",
+    "files": [
+      "src/brat/analysis/difficulty_assessment.py"
+    ]
+  },
+  {
+    "id": "BRAT-175",
+    "description": "Implement a function to flag low-confidence tasks.",
+    "files": [
+      "src/brat/analysis/feasibility.py"
+    ]
+  },
+  {
+    "id": "BRAT-176",
+    "description": "Write a function to generate the feasibility report based on analysis results.",
+    "files": [
+      "src/brat/analysis/report_generator.py"
+    ]
+  },
+  {
+    "id": "BRAT-177",
+    "description": "Define input data format for tasks",
+    "files": [
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-178",
+    "description": "Implement task data reading from file",
+    "files": [
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-179",
+    "description": "Integrate with Validation System to ensure data integrity",
+    "files": [
+      "src/brat/validation/goals_validator.py",
+      "src/brat/validation/tasks_validator.py",
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-180",
+    "description": "Define scoring criteria for sprint options",
+    "files": [
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-181",
+    "description": "Implement LLM integration for generating sprint options",
+    "files": [
+      "src/brat/llm/client.py",
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-182",
+    "description": "Create CSV file to store sprint options",
+    "files": [
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-183",
+    "description": "Define report content format for sprint plan summary",
+    "files": [
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-184",
+    "description": "Implement Markdown generation for sprint report",
+    "files": [
+      "src/brat/steps/sprint.py",
+      "docs/SPRINT_PLAN.md"
+    ]
+  },
+  {
+    "id": "BRAT-185",
+    "description": "Test the Sprint Planner functionality with sample data",
+    "files": [
+      "tests/test_sprint_planner.py"
+    ]
+  },
+  {
+    "id": "BRAT-186",
+    "description": "Refine and optimize sprint option generation algorithm",
+    "files": [
+      "src/brat/steps/sprint.py"
+    ]
+  },
+  {
+    "id": "BRAT-187",
+    "description": "Create a README file to document the deliverables and their structure.",
+    "files": [
+      "README.md"
+    ]
+  },
+  {
+    "id": "BRAT-188",
+    "description": "List all deliverable artifacts in a table format for easy reference.",
+    "files": [
+      "deliverables_table.md"
+    ]
+  },
+  {
+    "id": "BRAT-189",
+    "description": "Define a section for each layer of the architecture with key deliverables.",
+    "files": [
+      "architecture_layers.md"
+    ]
+  },
+  {
+    "id": "BRAT-190",
+    "description": "Create a timeline for deliverables based on their dependencies and deadlines.",
+    "files": [
+      "deliverables_timeline.md"
+    ]
+  },
+  {
+    "id": "BRAT-191",
+    "description": "Identify key performance indicators (KPIs) related to each deliverable.",
+    "files": [
+      "kpi_table.md"
+    ]
+  },
+  {
+    "id": "BRAT-192",
+    "description": "Create a section for potential risks associated with each deliverable and mitigation strategies.",
+    "files": [
+      "risk_analysis.md"
+    ]
+  },
+  {
+    "id": "BRAT-193",
+    "description": "Document the testing criteria for each deliverable to ensure quality.",
+    "files": [
+      "testing_criteria.md"
+    ]
+  },
+  {
+    "id": "BRAT-194",
+    "description": "Create a section for user documentation or end-user guides related to deliverables.",
+    "files": [
+      "user_documentation.md"
+    ]
+  },
+  {
+    "id": "BRAT-195",
+    "description": "Identify dependencies between deliverables and create a matrix to track them.",
+    "files": [
+      "dependency_matrix.md"
+    ]
+  },
+  {
+    "id": "BRAT-196",
+    "description": "Define the list of artifacts required by the system.",
+    "files": [
+      "deliverables.py"
+    ]
+  },
+  {
+    "id": "BRAT-197",
+    "description": "Create a module for generating artifact1.txt",
+    "files": [
+      "modules/module1.py"
+    ]
+  },
+  {
+    "id": "BRAT-198",
+    "description": "Create a module for generating artifact2.json",
+    "files": [
+      "modules/module2.py"
+    ]
+  },
+  {
+    "id": "BRAT-199",
+    "description": "Define the structure of Deliverables.md to document artifacts and their locations.",
+    "files": [
+      "deliverables.py"
+    ]
+  },
+  {
+    "id": "BRAT-200",
+    "description": "Write a function in module1.py to create artifact1.txt with expected content.",
+    "files": [
+      "modules/module1.py"
+    ]
+  },
+  {
+    "id": "BRAT-201",
+    "description": "Write a function in module2.py to create artifact2.json with expected content.",
+    "files": [
+      "modules/module2.py"
+    ]
+  },
+  {
+    "id": "BRAT-202",
+    "description": "Document the format of artifact1.txt in Deliverables.md",
+    "files": [
+      "deliverables.py"
+    ]
+  },
+  {
+    "id": "BRAT-203",
+    "description": "Document the format of artifact2.json in Deliverables.md",
+    "files": [
+      "deliverables.py"
+    ]
+  },
+  {
+    "id": "BRAT-204",
+    "description": "Assign tasks and dependencies for generating each artifact.",
+    "files": [
+      "deliverables.py"
+    ]
+  },
+  {
+    "id": "BRAT-205",
+    "description": "Establish a version control system or process for updating deliverables.",
+    "files": [
+      "deliverables.py",
+      ".gitignore"
+    ]
+  }
+]

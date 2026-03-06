@@ -1,0 +1,322 @@
+{
+  "levels": [
+    [
+      "WALLBUG-056",
+      "WALLBUG-016",
+      "WALLBUG-033",
+      "WALLBUG-008",
+      "WALLBUG-142",
+      "WALLBUG-047",
+      "WALLBUG-141",
+      "WALLBUG-115",
+      "WALLBUG-143",
+      "WALLBUG-064",
+      "WALLBUG-038",
+      "WALLBUG-009",
+      "WALLBUG-013",
+      "WALLBUG-111",
+      "WALLBUG-134",
+      "WALLBUG-003",
+      "WALLBUG-133",
+      "WALLBUG-103",
+      "WALLBUG-039",
+      "WALLBUG-035",
+      "WALLBUG-031",
+      "WALLBUG-060",
+      "WALLBUG-098",
+      "WALLBUG-112",
+      "WALLBUG-101",
+      "WALLBUG-007",
+      "WALLBUG-023",
+      "WALLBUG-109",
+      "WALLBUG-011",
+      "WALLBUG-117",
+      "WALLBUG-053",
+      "WALLBUG-061",
+      "WALLBUG-086",
+      "WALLBUG-085",
+      "WALLBUG-001",
+      "WALLBUG-071",
+      "WALLBUG-118",
+      "WALLBUG-110",
+      "WALLBUG-037",
+      "WALLBUG-074",
+      "WALLBUG-095",
+      "WALLBUG-010",
+      "WALLBUG-097",
+      "WALLBUG-087",
+      "WALLBUG-126",
+      "WALLBUG-055",
+      "WALLBUG-015",
+      "WALLBUG-004",
+      "WALLBUG-120",
+      "WALLBUG-068",
+      "WALLBUG-045",
+      "WALLBUG-014",
+      "WALLBUG-049",
+      "WALLBUG-051",
+      "WALLBUG-096",
+      "WALLBUG-012",
+      "WALLBUG-073",
+      "WALLBUG-059",
+      "WALLBUG-107",
+      "WALLBUG-125",
+      "WALLBUG-081",
+      "WALLBUG-148",
+      "WALLBUG-114",
+      "WALLBUG-121",
+      "WALLBUG-108",
+      "WALLBUG-113",
+      "WALLBUG-079"
+    ],
+    [
+      "WALLBUG-017",
+      "WALLBUG-144",
+      "WALLBUG-145",
+      "WALLBUG-100",
+      "WALLBUG-021",
+      "WALLBUG-102",
+      "WALLBUG-063",
+      "WALLBUG-019",
+      "WALLBUG-078",
+      "WALLBUG-048",
+      "WALLBUG-050",
+      "WALLBUG-036",
+      "WALLBUG-104",
+      "WALLBUG-106",
+      "WALLBUG-070",
+      "WALLBUG-139",
+      "WALLBUG-137",
+      "WALLBUG-020",
+      "WALLBUG-105",
+      "WALLBUG-146",
+      "WALLBUG-032",
+      "WALLBUG-147",
+      "WALLBUG-075",
+      "WALLBUG-132",
+      "WALLBUG-138",
+      "WALLBUG-054",
+      "WALLBUG-136",
+      "WALLBUG-131",
+      "WALLBUG-022",
+      "WALLBUG-027",
+      "WALLBUG-046",
+      "WALLBUG-057",
+      "WALLBUG-034",
+      "WALLBUG-062",
+      "WALLBUG-067",
+      "WALLBUG-140",
+      "WALLBUG-028",
+      "WALLBUG-018",
+      "WALLBUG-030",
+      "WALLBUG-088",
+      "WALLBUG-135",
+      "WALLBUG-099",
+      "WALLBUG-066",
+      "WALLBUG-005",
+      "WALLBUG-025",
+      "WALLBUG-024",
+      "WALLBUG-026",
+      "WALLBUG-052"
+    ],
+    [
+      "WALLBUG-006",
+      "WALLBUG-044",
+      "WALLBUG-091",
+      "WALLBUG-106",
+      "WALLBUG-054",
+      "WALLBUG-084",
+      "WALLBUG-080",
+      "WALLBUG-093",
+      "WALLBUG-069",
+      "WALLBUG-089",
+      "WALLBUG-041",
+      "WALLBUG-040",
+      "WALLBUG-082",
+      "WALLBUG-043",
+      "WALLBUG-065",
+      "WALLBUG-002",
+      "WALLBUG-005",
+      "WALLBUG-092",
+      "WALLBUG-083",
+      "WALLBUG-094",
+      "WALLBUG-090",
+      "WALLBUG-066",
+      "WALLBUG-042"
+    ],
+    [
+      "WALLBUG-002"
+    ]
+  ],
+  "edges": {
+    "WALLBUG-054": [
+      "WALLBUG-002",
+      "WALLBUG-005",
+      "WALLBUG-006",
+      "WALLBUG-054"
+    ],
+    "WALLBUG-134": [
+      "WALLBUG-005",
+      "WALLBUG-017",
+      "WALLBUG-018",
+      "WALLBUG-019",
+      "WALLBUG-020",
+      "WALLBUG-021",
+      "WALLBUG-022",
+      "WALLBUG-032",
+      "WALLBUG-034",
+      "WALLBUG-036",
+      "WALLBUG-046",
+      "WALLBUG-063",
+      "WALLBUG-066",
+      "WALLBUG-067",
+      "WALLBUG-088",
+      "WALLBUG-102",
+      "WALLBUG-104",
+      "WALLBUG-105",
+      "WALLBUG-135",
+      "WALLBUG-136",
+      "WALLBUG-137",
+      "WALLBUG-138",
+      "WALLBUG-139",
+      "WALLBUG-140"
+    ],
+    "WALLBUG-023": [
+      "WALLBUG-024",
+      "WALLBUG-028"
+    ],
+    "WALLBUG-056": [
+      "WALLBUG-025",
+      "WALLBUG-026",
+      "WALLBUG-027",
+      "WALLBUG-028",
+      "WALLBUG-057"
+    ],
+    "WALLBUG-029": [
+      "WALLBUG-029",
+      "WALLBUG-030"
+    ],
+    "WALLBUG-111": [
+      "WALLBUG-030"
+    ],
+    "WALLBUG-136": [
+      "WALLBUG-040",
+      "WALLBUG-041",
+      "WALLBUG-042",
+      "WALLBUG-043",
+      "WALLBUG-044"
+    ],
+    "WALLBUG-103": [
+      "WALLBUG-048",
+      "WALLBUG-050",
+      "WALLBUG-052",
+      "WALLBUG-054",
+      "WALLBUG-106"
+    ],
+    "WALLBUG-137": [
+      "WALLBUG-050",
+      "WALLBUG-054",
+      "WALLBUG-065"
+    ],
+    "WALLBUG-052": [
+      "WALLBUG-052",
+      "WALLBUG-054"
+    ],
+    "WALLBUG-077": [
+      "WALLBUG-058",
+      "WALLBUG-072",
+      "WALLBUG-075",
+      "WALLBUG-076",
+      "WALLBUG-077"
+    ],
+    "WALLBUG-107": [
+      "WALLBUG-062",
+      "WALLBUG-070",
+      "WALLBUG-106"
+    ],
+    "WALLBUG-030": [
+      "WALLBUG-063",
+      "WALLBUG-065",
+      "WALLBUG-066",
+      "WALLBUG-067",
+      "WALLBUG-069",
+      "WALLBUG-070"
+    ],
+    "WALLBUG-063": [
+      "WALLBUG-069"
+    ],
+    "WALLBUG-073": [
+      "WALLBUG-075"
+    ],
+    "WALLBUG-078": [
+      "WALLBUG-078"
+    ],
+    "WALLBUG-074": [
+      "WALLBUG-078"
+    ],
+    "WALLBUG-138": [
+      "WALLBUG-080",
+      "WALLBUG-082",
+      "WALLBUG-083",
+      "WALLBUG-084"
+    ],
+    "WALLBUG-140": [
+      "WALLBUG-089",
+      "WALLBUG-090",
+      "WALLBUG-091",
+      "WALLBUG-092",
+      "WALLBUG-093",
+      "WALLBUG-094"
+    ],
+    "WALLBUG-097": [
+      "WALLBUG-099"
+    ],
+    "WALLBUG-095": [
+      "WALLBUG-100"
+    ],
+    "WALLBUG-102": [
+      "WALLBUG-106"
+    ],
+    "WALLBUG-104": [
+      "WALLBUG-106"
+    ],
+    "WALLBUG-139": [
+      "WALLBUG-106"
+    ],
+    "WALLBUG-108": [
+      "WALLBUG-106"
+    ],
+    "WALLBUG-116": [
+      "WALLBUG-116"
+    ],
+    "WALLBUG-119": [
+      "WALLBUG-119",
+      "WALLBUG-122",
+      "WALLBUG-124"
+    ],
+    "WALLBUG-124": [
+      "WALLBUG-123"
+    ],
+    "WALLBUG-130": [
+      "WALLBUG-127",
+      "WALLBUG-128",
+      "WALLBUG-129",
+      "WALLBUG-130",
+      "WALLBUG-131",
+      "WALLBUG-132"
+    ],
+    "WALLBUG-098": [
+      "WALLBUG-131",
+      "WALLBUG-132"
+    ],
+    "WALLBUG-141": [
+      "WALLBUG-144"
+    ],
+    "WALLBUG-142": [
+      "WALLBUG-144",
+      "WALLBUG-145",
+      "WALLBUG-146",
+      "WALLBUG-147"
+    ]
+  }
+}

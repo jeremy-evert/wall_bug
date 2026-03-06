@@ -1,0 +1,1851 @@
+[
+  {
+    "id": "WALLBUG-001",
+    "description": "Create the main entry point for the CLI tool",
+    "files": [
+      "src/wallbug/cli.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/cli.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-002",
+    "description": "Implement the basic structure of the CLI tool",
+    "files": [
+      "src/wallbug/cli.py"
+    ],
+    "inputs": [
+      "src/wallbug/cli.py"
+    ],
+    "outputs": [
+      "src/wallbug/cli.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-003",
+    "description": "Create a configuration file for default settings",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-004",
+    "description": "Implement basic logging functionality",
+    "files": [
+      "src/wallbug/logging.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/logging.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-005",
+    "description": "Add a help command to the CLI tool",
+    "files": [
+      "src/wallbug/cli.py"
+    ],
+    "inputs": [
+      "src/wallbug/cli.py",
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/cli.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-006",
+    "description": "Implement version checking in the CLI tool",
+    "files": [
+      "src/wallbug/cli.py"
+    ],
+    "inputs": [
+      "src/wallbug/cli.py"
+    ],
+    "outputs": [
+      "src/wallbug/cli.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-007",
+    "description": "Create a documentation file for usage instructions",
+    "files": [
+      "docs/usage.md"
+    ],
+    "inputs": [],
+    "outputs": [
+      "docs/usage.md"
+    ]
+  },
+  {
+    "id": "WALLBUG-008",
+    "description": "Create README.md file",
+    "files": [
+      "README.md"
+    ],
+    "inputs": [],
+    "outputs": [
+      "README.md"
+    ]
+  },
+  {
+    "id": "WALLBUG-009",
+    "description": "Create LICENSE file",
+    "files": [
+      "LICENSE"
+    ],
+    "inputs": [],
+    "outputs": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "WALLBUG-010",
+    "description": "Create pyproject.toml file",
+    "files": [
+      "pyproject.toml"
+    ],
+    "inputs": [],
+    "outputs": [
+      "pyproject.toml"
+    ]
+  },
+  {
+    "id": "WALLBUG-011",
+    "description": "Create setup.sh script",
+    "files": [
+      "setup.sh"
+    ],
+    "inputs": [],
+    "outputs": [
+      "setup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-012",
+    "description": "Create clean.sh script",
+    "files": [
+      "clean.sh"
+    ],
+    "inputs": [],
+    "outputs": [
+      "clean.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-013",
+    "description": "Create .gitignore file",
+    "files": [
+      ".gitignore"
+    ],
+    "inputs": [],
+    "outputs": [
+      ".gitignore"
+    ]
+  },
+  {
+    "id": "WALLBUG-014",
+    "description": "Create wallbug/archive.py module",
+    "files": [
+      "src/wallbug/archive.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-015",
+    "description": "Create wallbug/metadata.py module",
+    "files": [
+      "src/wallbug/metadata.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/metadata.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-016",
+    "description": "Add basic configuration structure",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-017",
+    "description": "Define default environment variables in config.py",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-018",
+    "description": "Implement method for loading configuration from files",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-019",
+    "description": "Add method to override configuration with environment variables",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-020",
+    "description": "Define directory locations in the config module",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-021",
+    "description": "Specify tool paths and recording settings in the config module",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-022",
+    "description": "Define LLM backend configuration options",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-023",
+    "description": "Create configuration package structure",
+    "files": [
+      "src/wallbug/config/__init__.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/config/__init__.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-024",
+    "description": "Define constants for directory locations",
+    "files": [
+      "src/wallbug/config/constants.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/__init__.py"
+    ],
+    "outputs": [
+      "src/wallbug/config/constants.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-025",
+    "description": "Define constants for tool paths",
+    "files": [
+      "src/wallbug/config/constants.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/constants.py"
+    ],
+    "outputs": [
+      "src/wallbug/config/constants.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-026",
+    "description": "Define constants for recording settings",
+    "files": [
+      "src/wallbug/config/constants.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/constants.py"
+    ],
+    "outputs": [
+      "src/wallbug/config/constants.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-027",
+    "description": "Define constants for LLM backend configuration",
+    "files": [
+      "src/wallbug/config/constants.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/constants.py"
+    ],
+    "outputs": [
+      "src/wallbug/config/constants.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-028",
+    "description": "Implement Configuration class in wallbug/config/config.py",
+    "files": [
+      "src/wallbug/config/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/__init__.py",
+      "src/wallbug/config/constants.py"
+    ],
+    "outputs": [
+      "src/wallbug/config/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-029",
+    "description": "Handle environment variable overrides in Configuration class",
+    "files": [
+      "src/wallbug/config/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-030",
+    "description": "Test Configuration class with default and override values",
+    "files": [
+      "tests/test_config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/config.py",
+      "docs/usage.md"
+    ],
+    "outputs": [
+      "tests/test_config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-031",
+    "description": "Create the `wallbug/commands/__init__.py` file",
+    "files": [
+      "src/wallbug/commands/__init__.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/commands/__init__.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-032",
+    "description": "Implement the `wallbug/commands/status.py` module",
+    "files": [
+      "src/wallbug/commands/status.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/commands/status.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-033",
+    "description": "Create the `wallbug/commands/daemon.py` file",
+    "files": [
+      "src/wallbug/commands/daemon.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/commands/daemon.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-034",
+    "description": "Implement the `wallbug/commands/record.py` module",
+    "files": [
+      "src/wallbug/commands/record.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/commands/record.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-035",
+    "description": "Create the `wallbug/commands/transcribe.py` file",
+    "files": [
+      "src/wallbug/commands/transcribe.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/commands/transcribe.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-036",
+    "description": "Implement the `wallbug/commands/search.py` module",
+    "files": [
+      "src/wallbug/commands/search.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/commands/search.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-037",
+    "description": "Create the `wallbug/commands/summarize_day.py` file",
+    "files": [
+      "src/wallbug/commands/summarize_day.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/commands/summarize_day.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-038",
+    "description": "Implement the `wallbug/recorder.py` module",
+    "files": [
+      "src/wallbug/recorder.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-039",
+    "description": "Create recorder class structure",
+    "files": [
+      "src/wallbug/recorder.py"
+    ],
+    "inputs": [
+      "None"
+    ],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-040",
+    "description": "Define Recorder initialization method",
+    "files": [
+      "src/wallbug/recorder.py"
+    ],
+    "inputs": [
+      "src/wallbug/recorder.py"
+    ],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-041",
+    "description": "Implement start recording method",
+    "files": [
+      "src/wallbug/recorder.py"
+    ],
+    "inputs": [
+      "src/wallbug/recorder.py",
+      "ffmpeg command-line tool"
+    ],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-042",
+    "description": "Implement record buffer method",
+    "files": [
+      "src/wallbug/recorder.py"
+    ],
+    "inputs": [
+      "src/wallbug/recorder.py"
+    ],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-043",
+    "description": "Define Recorder stop method",
+    "files": [
+      "src/wallbug/recorder.py"
+    ],
+    "inputs": [
+      "src/wallbug/recorder.py"
+    ],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-044",
+    "description": "Implement file naming logic in recorder",
+    "files": [
+      "src/wallbug/recorder.py"
+    ],
+    "inputs": [
+      "src/wallbug/recorder.py"
+    ],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-045",
+    "description": "Create configuration class for recorder settings",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "None"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-046",
+    "description": "Define default configuration values in config.py",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-047",
+    "description": "Create vad.py module structure",
+    "files": [
+      "src/wallbug/vad.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/vad.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-048",
+    "description": "Implement VAD Engine interface in vad.py",
+    "files": [
+      "src/wallbug/vad.py"
+    ],
+    "inputs": [
+      "src/wallbug/vad.py"
+    ],
+    "outputs": [
+      "src/wallbug/vad.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-049",
+    "description": "Create audio_processor.py module structure",
+    "files": [
+      "src/wallbug/audio_processor.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/audio_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-050",
+    "description": "Implement Audio Processor in audio_processor.py",
+    "files": [
+      "src/wallbug/audio_processor.py"
+    ],
+    "inputs": [
+      "src/wallbug/audio_processor.py",
+      "src/wallbug/vad.py"
+    ],
+    "outputs": [
+      "src/wallbug/audio_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-051",
+    "description": "Create transcription_trigger.py module structure",
+    "files": [
+      "src/wallbug/transcription_trigger.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/transcription_trigger.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-052",
+    "description": "Implement Transcription Trigger in transcription_trigger.py",
+    "files": [
+      "src/wallbug/transcription_trigger.py"
+    ],
+    "inputs": [
+      "src/wallbug/transcription_trigger.py",
+      "src/wallbug/vad.py"
+    ],
+    "outputs": [
+      "src/wallbug/transcription_trigger.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-053",
+    "description": "Create config.yaml configuration file",
+    "files": [
+      "config.yaml"
+    ],
+    "inputs": [],
+    "outputs": [
+      "config.yaml"
+    ]
+  },
+  {
+    "id": "WALLBUG-054",
+    "description": "Update cli.py to use vad, audio_processor, and transcription_trigger",
+    "files": [
+      "src/wallbug/cli.py"
+    ],
+    "inputs": [
+      "src/wallbug/cli.py",
+      "src/wallbug/vad.py",
+      "src/wallbug/audio_processor.py",
+      "src/wallbug/transcription_trigger.py"
+    ],
+    "outputs": [
+      "src/wallbug/cli.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-055",
+    "description": "Create the main transcriber script",
+    "files": [
+      "src/wallbug/transcriber.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/transcriber.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-056",
+    "description": "Define constants for transcript directory and file naming",
+    "files": [
+      "src/wallbug/config/constants.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/config/constants.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-057",
+    "description": "Implement directory structure creation in the archive system",
+    "files": [
+      "src/wallbug/archive.py"
+    ],
+    "inputs": [
+      "src/wallbug/config/constants.py"
+    ],
+    "outputs": [
+      "src/wallbug/archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-058",
+    "description": "Add error handling and logging to transcriber script",
+    "files": [
+      "src/wallbug/transcriber.py"
+    ],
+    "inputs": [
+      "src/wallbug/logging.py"
+    ],
+    "outputs": [
+      "src/wallbug/transcriber.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-059",
+    "description": "Handle audio format conversion in the transcriber script",
+    "files": [
+      "src/wallbug/audio_processor.py",
+      "src/wallbug/transcriber.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/audio_processor.py",
+      "src/wallbug/transcriber.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-060",
+    "description": "Invoke whisper-cli from the transcriber script",
+    "files": [
+      "src/wallbug/transcriber.py"
+    ],
+    "inputs": [
+      "path/to/whisper-cli"
+    ],
+    "outputs": [
+      "src/wallbug/transcriber.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-061",
+    "description": "Save the text transcript in the archive system",
+    "files": [
+      "src/wallbug/archive.py",
+      "src/wallbug/transcriber.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/archive.py",
+      "src/wallbug/transcriber.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-062",
+    "description": "Create a script to manage the archive system",
+    "files": [
+      "scripts/manage_archive.py"
+    ],
+    "inputs": [
+      "src/wallbug/archive.py"
+    ],
+    "outputs": [
+      "scripts/manage_archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-063",
+    "description": "implement retention policy enforcement",
+    "files": [
+      "src/wallbug/retention_policy.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py",
+      "tests/test_config.py"
+    ],
+    "outputs": [
+      "src/wallbug/retention_policy.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-064",
+    "description": "create directory structure creation logic in archive.py",
+    "files": [
+      "src/wallbug/archive.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-065",
+    "description": "implement recording storage logic in archive.py",
+    "files": [
+      "src/wallbug/archive.py"
+    ],
+    "inputs": [
+      "src/wallbug/audio_processor.py",
+      "tests/test_config.py"
+    ],
+    "outputs": [
+      "src/wallbug/archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-066",
+    "description": "implement transcript generation and storage logic in archive.py",
+    "files": [
+      "src/wallbug/archive.py",
+      "src/wallbug/transcriber.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py",
+      "tests/test_config.py"
+    ],
+    "outputs": [
+      "src/wallbug/archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-067",
+    "description": "implement metadata management logic in archive.py",
+    "files": [
+      "src/wallbug/archive.py",
+      "src/wallbug/metadata.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py",
+      "tests/test_config.py"
+    ],
+    "outputs": [
+      "src/wallbug/archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-068",
+    "description": "create data directories for recordings, transcripts, notes, and summaries",
+    "files": [],
+    "inputs": [],
+    "outputs": [
+      "data/recordings/",
+      "data/transcripts/",
+      "data/notes/",
+      "data/summaries/"
+    ]
+  },
+  {
+    "id": "WALLBUG-069",
+    "description": "write unit tests for retention policy enforcement logic",
+    "files": [
+      "tests/test_retention_policy.py"
+    ],
+    "inputs": [
+      "src/wallbug/retention_policy.py",
+      "tests/test_config.py"
+    ],
+    "outputs": [
+      "tests/test_retention_policy.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-070",
+    "description": "write integration tests for archive operations",
+    "files": [
+      "tests/test_archive_operations.py"
+    ],
+    "inputs": [
+      "src/wallbug/archive.py",
+      "tests/test_config.py"
+    ],
+    "outputs": [
+      "tests/test_archive_operations.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-071",
+    "description": "Define the metadata structure",
+    "files": [
+      "src/wallbug/metadata.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/metadata.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-072",
+    "description": "Implement the attach_metadata function",
+    "files": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/tests/test_metadata.py"
+    ],
+    "inputs": [
+      "src/wallbug/metadata.py"
+    ],
+    "outputs": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/tests/test_metadata.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-073",
+    "description": "Create a sample transcript for testing",
+    "files": [],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/data/sample_transcript.txt"
+    ]
+  },
+  {
+    "id": "WALLBUG-074",
+    "description": "Write an example metadata output file",
+    "files": [],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/data/metadata.json"
+    ]
+  },
+  {
+    "id": "WALLBUG-075",
+    "description": "Refactor attach_metadata to use the sample transcript",
+    "files": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/tests/test_metadata.py"
+    ],
+    "inputs": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/data/sample_transcript.txt"
+    ],
+    "outputs": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/tests/test_metadata.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-076",
+    "description": "Add error handling to attach_metadata",
+    "files": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/tests/test_metadata.py"
+    ],
+    "inputs": [
+      "src/wallbug/metadata.py"
+    ],
+    "outputs": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/tests/test_metadata.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-077",
+    "description": "Log metadata processing events",
+    "files": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/logging.py"
+    ],
+    "inputs": [
+      "src/wallbug/metadata.py"
+    ],
+    "outputs": [
+      "src/wallbug/metadata.py",
+      "src/wallbug/logging.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-078",
+    "description": "Refactor tests to use the example metadata output",
+    "files": [
+      "src/wallbug/tests/test_metadata.py"
+    ],
+    "inputs": [
+      "src/wallbug/tests/test_metadata.py",
+      "src/wallbug/data/metadata.json"
+    ],
+    "outputs": [
+      "src/wallbug/tests/test_metadata.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-079",
+    "description": "Create note_processor.py file",
+    "files": [
+      "src/wallbug/note_processor.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/note_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-080",
+    "description": "Implement transcript reading in note_processor.py",
+    "files": [
+      "src/wallbug/note_processor.py"
+    ],
+    "inputs": [
+      "src/wallbug/note_processor.py"
+    ],
+    "outputs": [
+      "src/wallbug/note_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-081",
+    "description": "Create summarizer.py file",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-082",
+    "description": "Implement LLM invocation in note_processor.py",
+    "files": [
+      "src/wallbug/note_processor.py"
+    ],
+    "inputs": [
+      "src/wallbug/note_processor.py"
+    ],
+    "outputs": [
+      "src/wallbug/note_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-083",
+    "description": "Parse LLM response and extract structured content",
+    "files": [
+      "src/wallbug/note_processor.py"
+    ],
+    "inputs": [
+      "src/wallbug/note_processor.py"
+    ],
+    "outputs": [
+      "src/wallbug/note_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-084",
+    "description": "Generate Markdown file from extracted content",
+    "files": [
+      "src/wallbug/note_processor.py"
+    ],
+    "inputs": [
+      "src/wallbug/note_processor.py"
+    ],
+    "outputs": [
+      "src/wallbug/note_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-085",
+    "description": "Create summary generator in summarizer.py",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-086",
+    "description": "Analyze all notes from the day and generate daily summary",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [
+      "src/wallbug/notes/*.md"
+    ],
+    "outputs": [
+      "src/wallbug/summaries/YYYY-MM-DD.md"
+    ]
+  },
+  {
+    "id": "WALLBUG-087",
+    "description": "Implement daily summary generation logic",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "id": "WALLBUG-088",
+    "description": "Read all note files from the designated directory",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-089",
+    "description": "Parse the content of each note to extract relevant information",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [
+      "src/wallbug/summarizer.py"
+    ],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-090",
+    "description": "Aggregate and analyze the extracted information",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [
+      "src/wallbug/summarizer.py"
+    ],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-091",
+    "description": "Generate a summary based on the analysis",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [
+      "src/wallbug/summarizer.py"
+    ],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-092",
+    "description": "Save the summary in a markdown file named after the current date",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [
+      "src/wallbug/summarizer.py"
+    ],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-093",
+    "description": "Create a new markdown file for today's summary if it doesn't exist",
+    "files": [
+      "src/wallbug/utils.py"
+    ],
+    "inputs": [
+      "src/wallbug/summarizer.py"
+    ],
+    "outputs": [
+      "src/wallbug/utils.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-094",
+    "description": "Handle cases where there are no notes for a given day",
+    "files": [
+      "src/wallbug/summarizer.py"
+    ],
+    "inputs": [
+      "src/wallbug/summarizer.py"
+    ],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-095",
+    "description": "create directory manager module",
+    "files": [
+      "src/wallbug/directory_manager.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/directory_manager.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-096",
+    "description": "implement search command CLI handling",
+    "files": [
+      "src/wallbug/commands/search.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.yaml"
+    ],
+    "outputs": [
+      "src/wallbug/commands/search.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-097",
+    "description": "create search engine module",
+    "files": [
+      "src/wallbug/search_engine.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/search_engine.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-098",
+    "description": "implement directory configuration in config.yaml",
+    "files": [
+      "config.yaml"
+    ],
+    "inputs": [],
+    "outputs": [
+      "config.yaml"
+    ]
+  },
+  {
+    "id": "WALLBUG-099",
+    "description": "test search engine functionality",
+    "files": [
+      "tests/test_search_engine.py"
+    ],
+    "inputs": [
+      "src/wallbug/search_engine.py",
+      "src/wallbug/config.yaml"
+    ],
+    "outputs": [
+      "tests/test_search_engine.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-100",
+    "description": "test directory manager functionality",
+    "files": [
+      "tests/test_directory_manager.py"
+    ],
+    "inputs": [
+      "src/wallbug/directory_manager.py"
+    ],
+    "outputs": [
+      "tests/test_directory_manager.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-101",
+    "description": "update CLI help for search command",
+    "files": [
+      "docs/usage.md"
+    ],
+    "inputs": [],
+    "outputs": [
+      "docs/usage.md"
+    ]
+  },
+  {
+    "id": "WALLBUG-102",
+    "description": "Implement audio capture and buffering in `audio.py`",
+    "files": [
+      "src/wallbug/audio.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/audio.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-103",
+    "description": "Implement Voice Activity Detection (VAD) in `vad.py`",
+    "files": [
+      "src/wallbug/vad.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/vad.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-104",
+    "description": "Implement speech segmentation in `transcription.py`",
+    "files": [
+      "src/wallbug/transcription.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/transcription.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-105",
+    "description": "Implement transcription using a local language model in `transcriber.py`",
+    "files": [
+      "src/wallbug/transcriber.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/transcriber.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-106",
+    "description": "Create the main entry point for the daemon in `daemon.py`",
+    "files": [
+      "src/wallbug/daemon.py"
+    ],
+    "inputs": [
+      "src/wallbug/audio.py",
+      "src/wallbug/vad.py",
+      "src/wallbug/transcription.py",
+      "src/wallbug/transcriber.py",
+      "src/wallbug/archive.py",
+      "src/wallbug/note_processing.py"
+    ],
+    "outputs": [
+      "src/wallbug/daemon.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-107",
+    "description": "Implement archiving of transcriptions in `archive.py`",
+    "files": [
+      "src/wallbug/archive.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/archive.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-108",
+    "description": "Implement processing and storage of notes or additional information in `note_processing.py`",
+    "files": [
+      "src/wallbug/note_processing.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/note_processing.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-109",
+    "description": "Create a service template for systemd in `systemd/wallbug.service`",
+    "files": [
+      "systemd/wallbug.service"
+    ],
+    "inputs": [],
+    "outputs": [
+      "systemd/wallbug.service"
+    ]
+  },
+  {
+    "id": "WALLBUG-110",
+    "description": "Create systemd service file template",
+    "files": [
+      "systemd/wallbug.service"
+    ],
+    "inputs": [],
+    "outputs": [
+      "systemd/wallbug.service"
+    ]
+  },
+  {
+    "id": "WALLBUG-111",
+    "description": "Add documentation on how to use systemctl commands to manage the service",
+    "files": [
+      "docs/usage.md"
+    ],
+    "inputs": [],
+    "outputs": [
+      "docs/usage.md"
+    ]
+  },
+  {
+    "id": "WALLBUG-112",
+    "description": "Update setup.sh to install dependencies",
+    "files": [
+      "setup.sh"
+    ],
+    "inputs": [],
+    "outputs": [
+      "setup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-113",
+    "description": "Update setup.sh to download model",
+    "files": [
+      "setup.sh"
+    ],
+    "inputs": [],
+    "outputs": [
+      "setup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-114",
+    "description": "Update setup.sh to install Python package",
+    "files": [
+      "setup.sh"
+    ],
+    "inputs": [],
+    "outputs": [
+      "setup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-115",
+    "description": "Add environment variables and configuration files for the service",
+    "files": [
+      "src/wallbug/config.py",
+      "setup.sh"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/config.py",
+      "setup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-116",
+    "description": "Configure error handling and logging within the systemd service file",
+    "files": [
+      "systemd/wallbug.service"
+    ],
+    "inputs": [
+      "systemd/wallbug.service"
+    ],
+    "outputs": [
+      "systemd/wallbug.service"
+    ]
+  },
+  {
+    "id": "WALLBUG-117",
+    "description": "Add dependencies on other services or system resources",
+    "files": [
+      "setup.sh",
+      "README.md"
+    ],
+    "inputs": [],
+    "outputs": [
+      "setup.sh",
+      "README.md"
+    ]
+  },
+  {
+    "id": "WALLBUG-118",
+    "description": "Create `requirements.txt` file",
+    "files": [
+      "requirements.txt"
+    ],
+    "inputs": [],
+    "outputs": [
+      "requirements.txt"
+    ]
+  },
+  {
+    "id": "WALLBUG-119",
+    "description": "Add initial dependency for LLM model",
+    "files": [
+      "requirements.txt"
+    ],
+    "inputs": [
+      "requirements.txt"
+    ],
+    "outputs": [
+      "requirements.txt"
+    ]
+  },
+  {
+    "id": "WALLBUG-120",
+    "description": "Create `whisper.cpp` placeholder file",
+    "files": [
+      "src/wallbug/whisper.cpp"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/whisper.cpp"
+    ]
+  },
+  {
+    "id": "WALLBUG-121",
+    "description": "Add initial configuration for systemd service",
+    "files": [
+      "/etc/systemd/system/myapp.service"
+    ],
+    "inputs": [],
+    "outputs": [
+      "/etc/systemd/system/myapp.service"
+    ]
+  },
+  {
+    "id": "WALLBUG-122",
+    "description": "Modify `setup.sh` to install dependencies",
+    "files": [
+      "setup.sh"
+    ],
+    "inputs": [
+      "requirements.txt"
+    ],
+    "outputs": [
+      "setup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-123",
+    "description": "Modify `setup.sh` to download LLM model",
+    "files": [
+      "setup.sh",
+      "src/wallbug/whisper.cpp"
+    ],
+    "inputs": [
+      "setup.sh"
+    ],
+    "outputs": [
+      "setup.sh",
+      "src/wallbug/whisper.cpp"
+    ]
+  },
+  {
+    "id": "WALLBUG-124",
+    "description": "Modify `setup.sh` to install Python packages",
+    "files": [
+      "setup.sh"
+    ],
+    "inputs": [
+      "requirements.txt"
+    ],
+    "outputs": [
+      "setup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-125",
+    "description": "Create a basic structure for `myapp.service` systemd service file",
+    "files": [
+      "/etc/systemd/system/myapp.service"
+    ],
+    "inputs": [],
+    "outputs": [
+      "/etc/systemd/system/myapp.service"
+    ]
+  },
+  {
+    "id": "WALLBUG-126",
+    "description": "Create log directory",
+    "files": [
+      "data/logs/"
+    ],
+    "inputs": [],
+    "outputs": [
+      "data/logs/"
+    ]
+  },
+  {
+    "id": "WALLBUG-127",
+    "description": "Implement logging in `cleanup.sh`",
+    "files": [
+      "scripts/cleanup.sh",
+      "config.yaml",
+      "data/logs/wallbug.log"
+    ],
+    "inputs": [
+      "scripts/cleanup.sh"
+    ],
+    "outputs": [
+      "scripts/cleanup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-128",
+    "description": "Add temporary file cleanup function to `cleanup.sh`",
+    "files": [
+      "scripts/cleanup.sh"
+    ],
+    "inputs": [
+      "scripts/cleanup.sh"
+    ],
+    "outputs": [
+      "scripts/cleanup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-129",
+    "description": "Add old recording cleanup function to `cleanup.sh`",
+    "files": [
+      "scripts/cleanup.sh",
+      "config.yaml"
+    ],
+    "inputs": [
+      "scripts/cleanup.sh"
+    ],
+    "outputs": [
+      "scripts/cleanup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-130",
+    "description": "Implement error handling in `cleanup.sh`",
+    "files": [
+      "scripts/cleanup.sh"
+    ],
+    "inputs": [
+      "scripts/cleanup.sh"
+    ],
+    "outputs": [
+      "scripts/cleanup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-131",
+    "description": "Test temporary file cleanup function",
+    "files": [
+      "tests/test_cleanup.sh"
+    ],
+    "inputs": [
+      "scripts/cleanup.sh",
+      "config.yaml"
+    ],
+    "outputs": [
+      "tests/test_cleanup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-132",
+    "description": "Test old recording cleanup function",
+    "files": [
+      "tests/test_cleanup.sh"
+    ],
+    "inputs": [
+      "scripts/cleanup.sh",
+      "config.yaml"
+    ],
+    "outputs": [
+      "tests/test_cleanup.sh"
+    ]
+  },
+  {
+    "id": "WALLBUG-133",
+    "description": "Create logger.py module",
+    "files": [
+      "src/wallbug/logger.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/logger.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-134",
+    "description": "Define log level and format in config.py",
+    "files": [
+      "src/wallbug/config.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/config.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-135",
+    "description": "Implement logging function in logger.py",
+    "files": [
+      "src/wallbug/logger.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/logger.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-136",
+    "description": "Integrate logger into recorder module",
+    "files": [
+      "src/wallbug/recorder.py",
+      "src/wallbug/logger.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/recorder.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-137",
+    "description": "Integrate logger into audio_processor module",
+    "files": [
+      "src/wallbug/audio_processor.py",
+      "src/wallbug/logger.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/audio_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-138",
+    "description": "Integrate logger into note_processor module",
+    "files": [
+      "src/wallbug/note_processor.py",
+      "src/wallbug/logger.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/note_processor.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-139",
+    "description": "Integrate logger into transcriber module",
+    "files": [
+      "src/wallbug/transcriber.py",
+      "src/wallbug/logger.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/transcriber.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-140",
+    "description": "Integrate logger into summarizer module",
+    "files": [
+      "src/wallbug/summarizer.py",
+      "src/wallbug/logger.py"
+    ],
+    "inputs": [
+      "src/wallbug/config.py"
+    ],
+    "outputs": [
+      "src/wallbug/summarizer.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-141",
+    "description": "Create configuration file for audio retention policy",
+    "files": [
+      "config.ini"
+    ],
+    "inputs": [],
+    "outputs": [
+      "config.ini"
+    ]
+  },
+  {
+    "id": "WALLBUG-142",
+    "description": "Implement utility functions in utils.py",
+    "files": [
+      "src/wallbug/utils.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/utils.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-143",
+    "description": "Create audio_retention_policy module",
+    "files": [
+      "src/wallbug/audio_retention_policy.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/wallbug/audio_retention_policy.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-144",
+    "description": "Implement initialization in audio_retention_policy.py",
+    "files": [
+      "src/wallbug/audio_retention_policy.py"
+    ],
+    "inputs": [
+      "config.ini",
+      "src/wallbug/utils.py"
+    ],
+    "outputs": [
+      "src/wallbug/audio_retention_policy.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-145",
+    "description": "Implement file retrieval in audio_retention_policy.py",
+    "files": [
+      "src/wallbug/audio_retention_policy.py"
+    ],
+    "inputs": [
+      "src/wallbug/utils.py"
+    ],
+    "outputs": [
+      "src/wallbug/audio_retention_policy.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-146",
+    "description": "Implement age calculation in audio_retention_policy.py",
+    "files": [
+      "src/wallbug/audio_retention_policy.py"
+    ],
+    "inputs": [
+      "src/wallbug/utils.py"
+    ],
+    "outputs": [
+      "src/wallbug/audio_retention_policy.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-147",
+    "description": "Implement deletion logic in audio_retention_policy.py",
+    "files": [
+      "src/wallbug/audio_retention_policy.py"
+    ],
+    "inputs": [
+      "src/wallbug/utils.py"
+    ],
+    "outputs": [
+      "src/wallbug/audio_retention_policy.py"
+    ]
+  },
+  {
+    "id": "WALLBUG-148",
+    "description": "Create unit tests for audio retention policy module",
+    "files": [
+      "tests/test_audio_retention_policy.py"
+    ],
+    "inputs": [],
+    "outputs": [
+      "tests/test_audio_retention_policy.py"
+    ]
+  }
+]
