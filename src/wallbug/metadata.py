@@ -6,6 +6,7 @@ import logging
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from json import dumps as _json_dumps
 from typing import Any, Optional
 
 
@@ -107,6 +108,15 @@ def attach_metadata(
 
     merged_metadata = dict(computed)
     merged_metadata.update(provided)
+
+    try:
+        _json_dumps(merged_metadata, sort_keys=True)
+    except (TypeError, ValueError) as exc:
+        logger.error(
+            "Metadata attachment failed: merged metadata is not JSON serializable: %s",
+            exc,
+        )
+        raise MetadataError("metadata must be JSON serializable.") from exc
 
     logger.info(
         "Metadata attachment complete (computed_keys=%d, override_keys=%d, merged_keys=%d).",

@@ -768,7 +768,7 @@
     "outputs": [
       "src/wallbug/transcriber.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-059",

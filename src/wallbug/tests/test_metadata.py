@@ -75,3 +75,8 @@ def test_attach_metadata_handles_empty_transcript() -> None:
     assert result["metadata"]["char_count"] == 0
     assert result["metadata"]["word_count"] == 0
     assert result["metadata"]["line_count"] == 0
+
+
+def test_attach_metadata_raises_for_non_json_serializable_metadata() -> None:
+    with pytest.raises(MetadataError):
+        attach_metadata("hello", metadata={"bad": object()})
