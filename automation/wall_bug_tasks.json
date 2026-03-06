@@ -969,7 +969,7 @@
       "src/wallbug/metadata.py",
       "src/wallbug/tests/test_metadata.py"
     ],
-    "status": "todo"
+    "status": "done"
   },
   {
     "id": "WALLBUG-073",

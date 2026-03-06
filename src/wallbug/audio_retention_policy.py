@@ -142,17 +142,29 @@ class AudioRetentionPolicy:
     def _initialize_config(self, config: Optional[Config]) -> Optional[Config]:
         if config is not None:
             return config
-        if not callable(load_config):
-            return None
 
-        try:
-            return load_config()
-        except Exception as exc:
-            _BOOTSTRAP_LOGGER.warning(
-                "Failed to load runtime config during audio retention initialization: %s",
-                exc,
-            )
-            return None
+        if callable(load_config):
+            try:
+                loaded = load_config()
+                if loaded is not None:
+                    return loaded
+            except Exception as exc:
+                _BOOTSTRAP_LOGGER.warning(
+                    "Failed to load runtime config during audio retention initialization: %s",
+                    exc,
+                )
+
+        if isinstance(Config, type):
+            try:
+                default_config = Config()
+                return default_config if default_config is not None else None
+            except Exception as exc:
+                _BOOTSTRAP_LOGGER.warning(
+                    "Failed to build default config during audio retention initialization: %s",
+                    exc,
+                )
+
+        return None
 
     def _resolve_ini_path(self) -> Optional[Path]:
         candidates: list[Path] = []
